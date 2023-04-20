@@ -8,7 +8,7 @@ enum SupportedVersions {
 }
 
 const versions: Record<SupportedVersions, CliVersion> = {
-    v1: v1Cli,
+    [SupportedVersions.v1]: v1Cli,
 }
 
 interface SatsumaJson {
