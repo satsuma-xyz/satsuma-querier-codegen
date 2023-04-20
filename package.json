@@ -1,0 +1,24 @@
+{
+  "name": "satsuma",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "dependencies": {
+    "@types/node": "^16.11.7",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.4.4",
+    "yargs": "^17.0.1"
+  },
+  "bin": {
+    "satsuma": "index.ts"
+  },
+  "scripts": {
+    "satsuma": "npx ts-node index.ts",
+    "types": "graphql-codegen --config versions/v1/codegen.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/yargs": "^17.0.24"
+  }
+}
