@@ -27,9 +27,11 @@ export const generateServer = (config: CreateServerConfig, inputDirectory: strin
     const templatesDirectory = path.join(__dirname, 'template');
     const templateFiles = fs.readdirSync(templatesDirectory);
     for (const file of templateFiles) {
-        const filePath = path.join(templatesDirectory, file);
-        if (fs.statSync(filePath).isFile()) {
-            fs.copyFileSync(filePath, path.join(outputDirectory, file));
+        if (file.endsWith('.json') || file.endsWith('.ts')) {
+            const filePath = path.join(templatesDirectory, file);
+            if (fs.statSync(filePath).isFile()) {
+                fs.copyFileSync(filePath, path.join(outputDirectory, file));
+            }
         }
     }
 
