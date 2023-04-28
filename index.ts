@@ -46,12 +46,3 @@ export const generateTypes = async (version: SupportedVersions = DEFAULT_VERSION
 
     await versions[version].types(options);
 }
-
-//@ts-ignore
-generateServer(SupportedVersions.v1, {})
-    .then(() => {
-        process.exit(0);
-    })
-    .catch((err) => {
-        process.exit(1);
-    });
