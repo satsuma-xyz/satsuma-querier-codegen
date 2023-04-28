@@ -12,6 +12,11 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 
 const CONFIG: CreateServerConfig = {{CONFIG}};
 
+const globalContext = {
+    console,
+    knex,
+}
+
 /**
  * Set up a knex object for db querying
  * @param db
@@ -45,7 +50,7 @@ const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
 export const createNewSchema = async (gqlServers: GraphQLServer[]) => {
     const typeDefs = await getTypeDefs();
     const resolvers = await getResolvers();
-    const safeResolvers = deepCloneVMFunction(resolvers, {});
+    const safeResolvers = deepCloneVMFunction(resolvers, globalContext);
 
     const customerSchema = makeExecutableSchema({
         typeDefs,
@@ -66,7 +71,7 @@ export const createNewSchema = async (gqlServers: GraphQLServer[]) => {
 export const createServer = async () => {
     const schema = await createNewSchema(CONFIG.graphql);
     const helpers = await getHelpers();
-    const helpersSafe = deepCloneVMFunction(helpers, {});
+    const helpersSafe = deepCloneVMFunction(helpers, globalContext);
 
     const databases: Record<string, any> = {};
     for (const db of CONFIG.databases) {
