@@ -6,9 +6,11 @@ import {ApolloServer} from 'apollo-server';
 import knex from 'knex';
 import pg from 'pg';
 import {deepCloneVMFunction} from "./utils/deep-clone-vm";
-import {getHelpers, getResolvers, getTypeDefs} from "./utils/dynamic-import";
 import {CreateServerConfig, Database, GraphQLServer} from "./types";
 import { startStandaloneServer } from '@apollo/server/standalone';
+import {helpers} from "./helpers";
+import {resolvers} from "./resolvers";
+import {typeDefs} from "./type-defs";
 
 const CONFIG: CreateServerConfig = {{CONFIG}};
 
@@ -48,8 +50,6 @@ const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
  * Create a new schema by merging the remote schema with the customer schema.
  */
 export const createNewSchema = async (gqlServers: GraphQLServer[]) => {
-    const typeDefs = await getTypeDefs();
-    const resolvers = await getResolvers();
     const safeResolvers = deepCloneVMFunction(resolvers, globalContext);
 
     const customerSchema = makeExecutableSchema({
@@ -70,7 +70,6 @@ export const createNewSchema = async (gqlServers: GraphQLServer[]) => {
 
 export const createServer = async () => {
     const schema = await createNewSchema(CONFIG.graphql);
-    const helpers = await getHelpers();
     const helpersSafe = deepCloneVMFunction(helpers, globalContext);
 
     const databases: Record<string, any> = {};
