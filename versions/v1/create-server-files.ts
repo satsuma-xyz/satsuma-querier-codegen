@@ -24,13 +24,11 @@ export const createServerFiles = async (config: CreateServerConfig, outputPath =
 const resolveRelativeImports = (fileContent: string, filePath: string, visitedFiles: Set<string>): string => {
     // Return early if we've already visited this file
     if (visitedFiles.has(filePath)) {
-        console.log('Already visited file', filePath);
         return '';
     }
 
     // Add this file to the visited set to prevent infinite recursion
     visitedFiles.add(filePath);
-    console.log('Visiting file', filePath);
 
     // Parse the import content for relative imports and recursively resolve their dependencies
     const importRegex = /import\s+(.+?)\s+from\s+"(\.{1,2}\/.+?)";/gm;
