@@ -1,4 +1,4 @@
-import vm from "vm";
+import * as vm from "vm";
 import {HelpersMap, ResolversMap} from "../types";
 
 const getArgs = (func: Function) => {
