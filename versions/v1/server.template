@@ -9,7 +9,7 @@ import {deepCloneVMFunction} from "./utils/deep-clone-vm";
 import {CreateServerConfig, Database, GraphQLServer} from "./types";
 import { startStandaloneServer } from '@apollo/server/standalone';
 import {resolvers} from "./resolvers";
-import {typeDefs} from "./type-defs";
+import {typeDefs} from "./typeDefs";
 
 try {
     import {helpers} from "./helpers";
