@@ -1,6 +1,8 @@
 export type ResolversMap = Record<string, Function>;
 export type TypeDefs = string;
-export type HelpersMap = Record<string, Function | HelpersMap>;
+export type HelpersMap = {
+    [p: string]: Function | HelpersMap
+};
 
 
 export type Database = {

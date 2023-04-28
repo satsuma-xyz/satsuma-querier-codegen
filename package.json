@@ -11,10 +11,10 @@
     "typescript": "^4.4.4",
     "yargs": "^17.0.1"
   },
-  "main": "./index.ts",
+  "main": "./index.js",
+  "bin": "./index.js",
   "scripts": {
-    "satsuma": "npx ts-node index.ts",
-    "types": "graphql-codegen --config versions/v1/types-codegen.config.ts"
+    "build": "npx tsc index.ts && chmod 755 index.js"
   },
   "repository": {
     "type": "git",

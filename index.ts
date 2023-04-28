@@ -1,7 +1,6 @@
-import fs from 'fs';
-import yargs, {PositionalOptions} from 'yargs';
+import * as fs from 'fs';
 import v1Cli from './versions/v1';
-import {CliVersion, CliFnArgs, UpgradeArgs, ServerArgs} from "./shared/types";
+import {CliVersion, ServerArgs} from "./shared/types";
 
 enum SupportedVersions {
     v1 = 'v1',
