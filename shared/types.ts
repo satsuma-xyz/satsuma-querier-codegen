@@ -6,10 +6,10 @@ export type CliFnArgs = {
 export type UpgradeArgs = CliFnArgs & {from: string}
 export type ServerArgs = CliFnArgs & CreateServerConfig & {outputPath: string}
 
-type CliFunction<T extends CliFnArgs = CliFnArgs> = (args: T) => Promise<void>;
+type CliFunction<T extends CliFnArgs = CliFnArgs, ReturnType = void> = (args: T) => Promise<ReturnType>;
 
 export interface CliVersion {
-    server: CliFunction<ServerArgs>;
+    server: CliFunction<ServerArgs, string>;
     types: CliFunction;
     upgrade: CliFunction<UpgradeArgs>;
 }
