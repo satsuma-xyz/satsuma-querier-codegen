@@ -25,7 +25,7 @@
     "versions/**/*.js",
     "versions/**/*.ts",
     "versions/**/*.template",
-    "shared/**/*.js"
+    "shared/**/*.js",
     "shared/**/*.ts"
   ],
   "author": "",
