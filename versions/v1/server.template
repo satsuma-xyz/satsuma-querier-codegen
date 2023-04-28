@@ -8,6 +8,7 @@ import pg from 'pg';
 import {deepCloneVMFunction} from "./utils/deep-clone-vm";
 import {getHelpers, getResolvers, getTypeDefs} from "./utils/dynamic-import";
 import {CreateServerConfig, Database, GraphQLServer} from "./types";
+import { startStandaloneServer } from '@apollo/server/standalone';
 
 const CONFIG: CreateServerConfig = {{CONFIG}};
 
@@ -81,3 +82,7 @@ export const createServer = async () => {
     });
 };
 
+export const startServer = async (options) => {
+    const server = await s.createServer();
+    return await startStandaloneServer(server, options);
+}
