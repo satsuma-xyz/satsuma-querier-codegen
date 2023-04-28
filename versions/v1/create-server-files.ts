@@ -34,7 +34,7 @@ export const createServerFiles = async (config: CreateServerConfig, outputPath =
     }
 
     // Compile the satsuma-server.tmp file to javascript
-    child_process.execSync(`npx tsc ${serverPath}`, {cwd: __dirname, stdio : 'pipe'});
+    child_process.execSync(`npx tsc ${serverPath} --esModuleInterop`, {cwd: __dirname, stdio : 'pipe'});
 
     return serverPath;
 }
