@@ -68,9 +68,9 @@ export const createServer = async () => {
     const helpers = await getHelpers();
     const helpersSafe = deepCloneVMFunction(helpers, {});
 
-    const context: Record<string, any> = {};
+    const databases: Record<string, any> = {};
     for (const db of CONFIG.databases) {
-        context[db.name] = createKnex(db);
+        databases[db.name] = createKnex(db);
     }
 
     return new ApolloServer({
