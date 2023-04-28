@@ -20,11 +20,6 @@
     "type": "git",
     "url": "https://github.com/satsuma-xyz/custom-querier-codegen.git"
   },
-  "files": [
-    "index.js",
-    "versions/**/*.js",
-    "shared/**/*.js"
-  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
