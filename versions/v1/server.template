@@ -83,6 +83,6 @@ export const createServer = async () => {
 };
 
 export const startServer = async (options) => {
-    const server = await s.createServer();
+    const server = await createServer();
     return await startStandaloneServer(server, options);
 }
