@@ -8,7 +8,7 @@ import {deepCloneVMFunction} from "./utils/deep-clone-vm";
 import {getHelpers, getResolvers, getTypeDefs} from "./utils/dynamic-import";
 import {CreateServerConfig, Database, GraphQLServer} from "./types";
 
-const CONFIG: CreateServerConfig = JSON.parse(`{{CONFIG}}`);
+const CONFIG: CreateServerConfig = {{CONFIG}};
 
 /**
  * Set up a knex object for db querying
