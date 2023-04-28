@@ -1,6 +1,6 @@
 {
   "name": "@satsuma/codegen",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "",
   "dependencies": {
     "@graphql-codegen/cli": "^3.3.1",
