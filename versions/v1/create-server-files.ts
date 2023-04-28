@@ -1,6 +1,7 @@
 import {CreateServerConfig} from "./types";
 import * as fs from 'fs';
 import * as path from 'path';
+import child_process from "child_process";
 
 export const createServerFiles = async (config: CreateServerConfig, outputPath = "./") => {
     const jsonConfig = JSON.stringify(config);
@@ -31,6 +32,9 @@ export const createServerFiles = async (config: CreateServerConfig, outputPath =
             console.log(e);
         }
     }
+    
+    // Compile the satsuma-server.tmp file to javascript
+    child_process.execSync(`npx tsc ${serverPath}`, {cwd: __dirname, stdio : 'pipe'});
 
     return serverPath;
 }

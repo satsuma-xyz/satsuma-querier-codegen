@@ -76,7 +76,7 @@ export const createServer = async () => {
     return new ApolloServer({
         schema,
         context: {
-            ...context,
+            db: databases,
             helpers: helpersSafe,
         }
     });
