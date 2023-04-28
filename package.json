@@ -1,6 +1,6 @@
 {
   "name": "@satsuma/codegen",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "",
   "dependencies": {
     "@apollo/server": "^4.7.0",
