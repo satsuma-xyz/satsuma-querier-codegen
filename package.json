@@ -33,7 +33,6 @@
   "license": "ISC",
   "devDependencies": {
     "@types/knex": "^0.16.1",
-    "@types/pg": "^8.6.6",
-    "@types/yargs": "^17.0.24"
+    "@types/pg": "^8.6.6"
   }
 }
