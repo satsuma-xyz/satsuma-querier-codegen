@@ -4,7 +4,7 @@ import * as os from 'os';
 import {CreateServerConfig} from "./template/types";
 import { execSync } from 'child_process';
 
-export const generateServer = (config: CreateServerConfig, inputDirectory: string, outputDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'satsuma-'))): string => {
+export const generateServer = (config: CreateServerConfig, inputDirectory: string, outputDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'satsuma-')), verbose?: string): string => {
     // Write the server.json
     fs.writeFileSync(path.join(outputDirectory, 'server.json'), JSON.stringify(config));
 
@@ -37,8 +37,9 @@ export const generateServer = (config: CreateServerConfig, inputDirectory: strin
     }
 
     // Run npm install & typescript compile in that directory
-    execSync('npm install', { cwd: outputDirectory });
-    execSync('npx tsc start-server.ts', { cwd: outputDirectory });
+    console.log('Installing dependencies...', {outputDirectory});
+    execSync('npm ci', { cwd: outputDirectory });
+    execSync('npm run build', { cwd: outputDirectory });
 
     return outputDirectory;
 }

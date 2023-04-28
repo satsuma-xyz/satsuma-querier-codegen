@@ -14,6 +14,6 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["./start-server.ts"],
+  "include": ["start-server.ts"],
   "exclude": ["node_modules"]
 }
