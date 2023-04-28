@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
-    "target": "ES2015",
     "module": "commonjs",
+    "target": "ES2017",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "moduleResolution": "Node",
     "strict": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
+    "noEmit": true,
+    "allowJs": true,
+    "isolatedModules": true,
     "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
-  },
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Recommended"
+  }
 }
