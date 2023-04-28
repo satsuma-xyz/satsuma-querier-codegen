@@ -36,6 +36,12 @@ export const createServerFiles = async (config: CreateServerConfig, outputPath =
     return serverPath;
 }
 
+const ignoredImports = [
+    "./typeDefs",
+    "./resolvers",
+    "./helpers",
+]
+
 const resolveRelativeImports = (fileContent: string, filePath: string, visitedFiles: Set<string>): string => {
     // Return early if we've already visited this file
     if (visitedFiles.has(filePath)) {
@@ -49,6 +55,10 @@ const resolveRelativeImports = (fileContent: string, filePath: string, visitedFi
     const importRegex = /import\s+(.+?)\s+from\s+"(\.{1,2}\/.+?)";/gm;
     const importsToAppend: string[] = [];
     let resolvedImportContent = fileContent.replace(importRegex, (match, imports, importPath) => {
+        if (ignoredImports.includes(importPath)) {
+            // Don't replace
+            return match;
+        }
         const absoluteImportPath = path.resolve(path.dirname(filePath), importPath + '.ts');
         const importContent = fs.readFileSync(absoluteImportPath, { encoding: 'utf8' });
         const resolvedImportContent = resolveRelativeImports(importContent, absoluteImportPath, visitedFiles);
