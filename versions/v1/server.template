@@ -11,11 +11,15 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import {resolvers} from "./resolvers";
 import {typeDefs} from "./typeDefs";
 
-try {
-    import {helpers} from "./helpers";
-} catch (e) {
-    helpers = {}
-}
+let helpers = {};
+
+void (async () => {
+    try {
+        const h = await import("./helpers");
+        helpers = h.helpers;
+    } catch (e) {
+    }
+})();
 
 const CONFIG: CreateServerConfig = {{CONFIG}};
 
