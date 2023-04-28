@@ -13,10 +13,9 @@
     "ts-node": "^10.4.0",
     "typescript": "^4.4.4"
   },
-  "main": "./index.js",
-  "bin": "./index.js",
+  "main": "./versions/v1/index.ts",
   "scripts": {
-    "build": "npx tsc index.ts && chmod 755 index.js"
+    "build": ""
   },
   "repository": {
     "type": "git",

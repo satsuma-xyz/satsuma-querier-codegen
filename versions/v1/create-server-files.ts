@@ -1,73 +1,37 @@
-import {CreateServerConfig} from "./types";
 import * as fs from 'fs';
 import * as path from 'path';
-import * as child_process from "child_process";
+import * as os from 'os';
+import {CreateServerConfig} from "./template/types";
 
-export const createServerFiles = async (config: CreateServerConfig, outputPath = "./") => {
-    const jsonConfig = JSON.stringify(config);
-    const serverTemplatePath = path.resolve(path.join(__dirname, './server.template'));
-    const serverPath = path.resolve(`${outputPath}/satsuma-server.tmp.ts`);
+export const generateServer = (config: CreateServerConfig, inputDirectory: string, outputDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'satsuma-'))): string => {
+    // Write the server.json
+    fs.writeFileSync(path.join(outputDirectory, 'server.json'), JSON.stringify(config));
 
-    // Read the server template file
-    const serverTemplate = fs.readFileSync(serverTemplatePath, { encoding: 'utf8' });
+    // copy resolvers.ts, typeDefs.ts, and satsuma.json from inputDirectory to outputDirectory
+    const required = [
+        '.satsuma.json',
+        'resolvers.ts',
+        'typeDefs.ts',
+    ]
+    for (const file of required) {
+        fs.copyFileSync(path.join(inputDirectory, file), path.join(outputDirectory, file));
+    }
 
-    let serverFileContent = resolveRelativeImports(serverTemplate, serverTemplatePath, new Set<string>());
+    // Copy helpers, if it's present.
+    const helpersPath = path.join(inputDirectory, 'helpers.ts');
+    if (fs.existsSync(helpersPath)) {
+        fs.copyFileSync(helpersPath, path.join(outputDirectory, 'helpers.ts'));
+    }
 
-    // Replace the {{CONFIG}} template variable with the JSON stringified config object
-    serverFileContent = serverFileContent.replace('{{CONFIG}}', jsonConfig);
-
-    // Write the new server file to the specified path
-    fs.writeFileSync(serverPath, `${serverFileContent}`);
-
-    for (const filePath of [
-        config.helpersFile, config.resolverFile, config.typeDefsFile
-    ]) {
-        // copy the file to the output path
-        try {
-            const fileContent = fs.readFileSync(filePath, {encoding: 'utf8'});
-            // const resolvedFileContent = resolveRelativeImports(fileContent, filePath, new Set<string>());
-            const resolvedFilePath = path.resolve(`${outputPath}/${path.basename(filePath)}`);
-            fs.writeFileSync(resolvedFilePath, fileContent);
-        } catch (e) {
-            console.log(e);
+    // copy all files in the templates directory to outputDirectory
+    const templatesDirectory = path.join(__dirname, 'template');
+    const templateFiles = fs.readdirSync(templatesDirectory);
+    for (const file of templateFiles) {
+        const filePath = path.join(templatesDirectory, file);
+        if (fs.statSync(filePath).isFile()) {
+            fs.copyFileSync(filePath, path.join(outputDirectory, file));
         }
     }
 
-    return serverPath;
-}
-
-const ignoredImports = [
-    "./typeDefs",
-    "./resolvers",
-    "./helpers",
-]
-
-const resolveRelativeImports = (fileContent: string, filePath: string, visitedFiles: Set<string>): string => {
-    // Return early if we've already visited this file
-    if (visitedFiles.has(filePath)) {
-        return '';
-    }
-
-    // Add this file to the visited set to prevent infinite recursion
-    visitedFiles.add(filePath);
-
-    // Parse the import content for relative imports and recursively resolve their dependencies
-    const importRegex = /import\s+(.+?)\s+from\s+"(\.{1,2}\/.+?)";/gm;
-    const importsToAppend: string[] = [];
-    let resolvedImportContent = fileContent.replace(importRegex, (match, imports, importPath) => {
-        if (ignoredImports.includes(importPath)) {
-            // Don't replace
-            return match;
-        }
-        const absoluteImportPath = path.resolve(path.dirname(filePath), importPath + '.ts');
-        const importContent = fs.readFileSync(absoluteImportPath, { encoding: 'utf8' });
-        const resolvedImportContent = resolveRelativeImports(importContent, absoluteImportPath, visitedFiles);
-        importsToAppend.push(resolvedImportContent);
-        return '';
-    });
-
-    // Append the imported file contents to the end of the resolved import content
-    resolvedImportContent = `${resolvedImportContent}\n${importsToAppend.join('')}`;
-
-    return resolvedImportContent;
+    return outputDirectory;
 }

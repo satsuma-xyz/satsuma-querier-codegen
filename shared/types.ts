@@ -1,4 +1,4 @@
-import {CreateServerConfig} from "../versions/v1/types";
+import {CreateServerConfig} from "../versions/v1/templates/types";
 
 export type CliFnArgs = {
 }

@@ -1,15 +1,16 @@
 // @ts-nocheck
-import {makeExecutableSchema, mergeSchemas} from '@graphql-tools/schema';
-import {schemaFromExecutor, wrapSchema} from '@graphql-tools/wrap';
-import {buildHTTPExecutor} from '@graphql-tools/executor-http'
-import {ApolloServer} from 'apollo-server';
+// This file should be placed alongside the user's files.
+
+import { makeExecutableSchema, mergeSchemas } from '@graphql-tools/schema';
+import { schemaFromExecutor, wrapSchema } from '@graphql-tools/wrap';
+import { buildHTTPExecutor } from '@graphql-tools/executor-http'
+import { ApolloServer } from 'apollo-server';
 import knex from 'knex';
 import pg from 'pg';
-import {deepCloneVMFunction} from "./utils/deep-clone-vm";
-import {CreateServerConfig, Database, GraphQLServer} from "./types";
-import { startStandaloneServer } from '@apollo/server/standalone';
-import {resolvers} from "./resolvers";
-import {typeDefs} from "./typeDefs";
+import { deepCloneVMFunction } from "./deep-clone-vm";
+import { CreateServerConfig, Database, GraphQLServer } from "./types";
+import { resolvers } from "./resolvers";
+import { typeDefs } from "./typeDefs";
 
 let helpers = {};
 
@@ -20,8 +21,6 @@ void (async () => {
     } catch (e) {
     }
 })();
-
-const CONFIG: CreateServerConfig = {{CONFIG}};
 
 const globalContext = {
     console,
@@ -77,12 +76,12 @@ export const createNewSchema = async (gqlServers: GraphQLServer[]) => {
     });
 };
 
-export const createServer = async () => {
-    const schema = await createNewSchema(CONFIG.graphql);
+export const createServer = async (config: CreateServerConfig) => {
+    const schema = await createNewSchema(config.graphql);
     const helpersSafe = deepCloneVMFunction(helpers, globalContext);
 
     const databases: Record<string, any> = {};
-    for (const db of CONFIG.databases) {
+    for (const db of config.databases) {
         databases[db.name] = createKnex(db);
     }
 
@@ -94,8 +93,3 @@ export const createServer = async () => {
         }
     });
 };
-
-export const startServer = async (options) => {
-    const server = await createServer();
-    return await startStandaloneServer(server, options);
-}

@@ -1,6 +1,6 @@
 import {CliVersion, ServerArgs} from "../../shared/types";
-import {createServerFiles} from "./create-server-files";
-import {CreateServerConfig} from "./types";
+import {generateServer} from "./create-server-files";
+import {CreateServerConfig} from "./template/types";
 
 const v1: CliVersion = {
     server: async (args: ServerArgs) => {
@@ -12,7 +12,7 @@ const v1: CliVersion = {
             typeDefsFile: args.typeDefsFile,
             helpersFile: args.helpersFile,
         }
-        return await createServerFiles(config, args.outputPath);
+        return generateServer(config, args.inputPath);
     },
     types: async (args) => {
         // export const saveTypeDefs = () => createNewSchema().then(schema => {

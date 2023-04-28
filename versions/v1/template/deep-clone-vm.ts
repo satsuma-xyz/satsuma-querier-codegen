@@ -1,5 +1,5 @@
 import * as vm from "vm";
-import {HelpersMap, ResolversMap} from "../types";
+import {HelpersMap, ResolversMap} from "./types";
 
 const getArgs = (func: Function) => {
     // First match everything inside the function argument parens.
@@ -47,10 +47,13 @@ export const deepCloneVMFunction = (obj: ResolversMap | HelpersMap, resolverCont
     map.set(obj, cloneObj);
 
     for (const key of Reflect.ownKeys(obj)) {
+
+        // @ts-ignore
         const value = obj[key];
 
         cloneObj[key] =
             value instanceof Object
+                // @ts-ignore
                 ? deepCloneVMFunction(value, map)
                 : value;
     }
