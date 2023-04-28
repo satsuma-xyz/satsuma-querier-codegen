@@ -8,9 +8,14 @@ import pg from 'pg';
 import {deepCloneVMFunction} from "./utils/deep-clone-vm";
 import {CreateServerConfig, Database, GraphQLServer} from "./types";
 import { startStandaloneServer } from '@apollo/server/standalone';
-import {helpers} from "./helpers";
 import {resolvers} from "./resolvers";
 import {typeDefs} from "./type-defs";
+
+try {
+    import {helpers} from "./helpers";
+} catch (e) {
+    helpers = {}
+}
 
 const CONFIG: CreateServerConfig = {{CONFIG}};
 
