@@ -18,6 +18,20 @@ export const createServerFiles = async (config: CreateServerConfig, outputPath =
     // Write the new server file to the specified path
     fs.writeFileSync(serverPath, `${serverFileContent}`);
 
+    for (const f of [
+        config.helpersFile, config.resolverFile, config.typeDefsFile
+    ]) {
+        // copy the file to the output path
+        try {
+            const fileContent = fs.readFileSync(f, {encoding: 'utf8'});
+            const resolvedFileContent = resolveRelativeImports(fileContent, f, new Set<string>());
+            const resolvedFilePath = path.resolve(`${outputPath}/${path.basename(f)}`);
+            fs.writeFileSync(resolvedFilePath, resolvedFileContent);
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
     return serverPath;
 }
 

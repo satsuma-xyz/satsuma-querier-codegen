@@ -8,6 +8,9 @@ const v1: CliVersion = {
             databases: args.databases,
             graphql: args.graphql,
             tables: args.tables,
+            resolverFile: args.resolverFile,
+            typeDefsFile: args.typeDefsFile,
+            helpersFile: args.helpersFile,
         }
         return await createServerFiles(config, args.outputPath);
     },

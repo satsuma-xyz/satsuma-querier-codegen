@@ -24,4 +24,7 @@ export type CreateServerConfig = {
     databases: Database[];
     graphql: GraphQLServer[];
     tables: TableMapping;
+    resolverFile: string;
+    typeDefsFile: string;
+    helpersFile: string;
 }
