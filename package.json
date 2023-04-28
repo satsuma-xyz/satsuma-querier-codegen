@@ -25,7 +25,6 @@
     "index.js",
     "versions/**/*.js",
     "versions/**/*.ts",
-    "versions/**/*.template",
     "shared/**/*.js",
     "shared/**/*.ts"
   ],
