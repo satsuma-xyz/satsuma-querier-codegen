@@ -1,17 +1,20 @@
 import {HelpersMap, ResolversMap, TypeDefs} from "../types";
 
-const customerCode = async (file: string) => {
-    return await import(`./${file}#${new Date().getTime()}`)
-};
-
 export const getHelpers = async (): Promise<HelpersMap> => {
-    return customerCode('./helpers.ts');
+    try {
+        const {helpers}  = await import('./helpers');
+        return helpers
+    } catch (e) {
+        return {};
+    }
 }
 
 export const getTypeDefs = async (): Promise<TypeDefs> => {
-    return customerCode('./typeDefs.ts');
+    const {typeDefs} = await import('./typeDefs');
+    return typeDefs;
 }
 
 export const getResolvers = async (): Promise<ResolversMap> => {
-    return customerCode('./resolvers.ts');
+    const {resolvers} = await import('./resolvers');
+    return resolvers;
 }
