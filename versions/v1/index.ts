@@ -9,7 +9,7 @@ const v1: CliVersion = {
             graphql: args.graphql,
             tables: args.tables,
         }
-        await createServerFiles(config, args.outputPath);
+        return await createServerFiles(config, args.outputPath);
     },
     types: async (args) => {
         // export const saveTypeDefs = () => createNewSchema().then(schema => {

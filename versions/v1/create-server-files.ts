@@ -5,7 +5,7 @@ import * as path from 'path';
 export const createServerFiles = async (config: CreateServerConfig, outputPath = "./") => {
     const jsonConfig = JSON.stringify(config);
     const serverTemplatePath = path.resolve(path.join(__dirname, './server.template'));
-    const serverPath = path.resolve(`${outputPath}/server.ts`);
+    const serverPath = path.resolve(`${outputPath}/satsuma-server.tmp.ts`);
 
     // Read the server template file
     const serverTemplate = fs.readFileSync(serverTemplatePath, { encoding: 'utf8' });
@@ -17,6 +17,8 @@ export const createServerFiles = async (config: CreateServerConfig, outputPath =
 
     // Write the new server file to the specified path
     fs.writeFileSync(serverPath, `${serverFileContent}`);
+
+    return serverPath;
 }
 
 const resolveRelativeImports = (fileContent: string, filePath: string, visitedFiles: Set<string>): string => {

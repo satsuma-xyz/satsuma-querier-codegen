@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {makeExecutableSchema, mergeSchemas} from '@graphql-tools/schema';
 import {schemaFromExecutor, wrapSchema} from '@graphql-tools/wrap';
 import {buildHTTPExecutor} from '@graphql-tools/executor-http'
