@@ -15,7 +15,7 @@
   },
   "main": "./versions/v1/index.ts",
   "scripts": {
-    "build": ""
+    "build": "npx tsc index.ts && chmod 755 index.js"
   },
   "repository": {
     "type": "git",
