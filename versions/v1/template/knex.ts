@@ -11,6 +11,8 @@ export class SatsumaKnex {
             client: db.type,
             connection: db.uri
         });
+
+        // Use the correct schema
         this.knex.raw('SET search_path TO %', db.search_path || 'public');
 
         return new Proxy<SatsumaKnex>(this, {

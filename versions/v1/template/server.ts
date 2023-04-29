@@ -7,6 +7,7 @@ import { buildHTTPExecutor } from '@graphql-tools/executor-http'
 import { ApolloServer } from 'apollo-server';
 import { deepCloneVMFunction } from "./deep-clone-vm";
 import {CreateServerConfig, Database, GraphQLServer, HelpersMap, ResolversMap} from "./types";
+import {SatsumaKnex} from "./knex";
 
 let resolvers = {};
 let typeDefs = "";
