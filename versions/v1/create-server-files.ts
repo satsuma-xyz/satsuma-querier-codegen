@@ -29,7 +29,7 @@ export const generateServer = (config: CreateServerConfig, inputDirectory: strin
     const templateFiles = [
         'package.json',
         'tsconfig.json',
-        "package-lock.json",
+        "pl.json",
         "server.ts",
         "start-server.ts",
         "types.ts",
@@ -43,6 +43,8 @@ export const generateServer = (config: CreateServerConfig, inputDirectory: strin
             }
         }
     }
+
+    fs.copyFileSync(path.join(outputDirectory, 'pl.json'), path.join(outputDirectory, 'package-lock.json'));
 
     // Run npm install & typescript compile in that directory
     console.log('Installing dependencies...', {outputDirectory});
