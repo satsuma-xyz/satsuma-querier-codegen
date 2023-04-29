@@ -48,8 +48,8 @@ export const generateServer = (config: CreateServerConfig, inputDirectory: strin
 
     // Run npm install & typescript compile in that directory
     console.log('Installing dependencies...', {outputDirectory});
-    execSync('npm ci', { cwd: outputDirectory });
-    execSync('npm run build', { cwd: outputDirectory });
+    execSync('npm ci', { cwd: outputDirectory, stdio: 'ignore' });
+    execSync('npm run build', { cwd: outputDirectory, stdio: 'ignore' });
 
     return outputDirectory;
 }

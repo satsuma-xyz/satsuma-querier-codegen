@@ -1,31 +1,57 @@
 import knex, {Knex} from 'knex';
-import { Database } from './types';
+import {Database, TableMapping, TableReplacement} from './types';
 import pg from 'pg';
 
-export class SatsumaKnex {
-    private knex: Knex;
-
-    constructor(db: Database) {
-        pg.defaults.ssl = false;
-        this.knex = knex({
-            client: db.type,
-            connection: db.uri
-        });
-
-        // Use the correct schema
-        this.knex.raw('SET search_path TO %', db.search_path || 'public');
-
-        return new Proxy<SatsumaKnex>(this, {
-            get(target, propKey, receiver) {
-                const targetValue = target[propKey as keyof SatsumaKnex];
-                if (typeof targetValue === 'function') {
-                    return (...args: any[]) => {
-                        return targetValue.apply(target, args);
-                    };
-                } else {
-                    return targetValue;
-                }
-            }
-        });
+const handleTable = (args: any[], tableMapping?: TableReplacement) => {
+    if (tableMapping) {
+        const { actualName } = tableMapping;
+        args[0] = actualName;
     }
+};
+
+export const createSatsumaKnex = async (db: Database): Promise<Knex> => {
+    pg.defaults.ssl = false;
+    const k = knex({
+        client: db.type,
+        connection: db.uri
+    });
+    await k.raw(`SET search_path TO ${db.search_path || "public"}`);
+
+    const tableMappings = db.tables;
+
+    const handler = {
+        get(target: Knex, propKey: keyof Knex) {
+            const targetValue = target[propKey];
+            if (typeof targetValue === 'function') {
+                return function (this: Knex, ...args: any[]) {
+                    if (typeof args[0] === 'string') {
+                        const tableMapping = tableMappings[args[0]];
+                        handleTable(args, tableMapping);
+                        const result = targetValue.apply(target, args);
+                        if (tableMapping && tableMapping.whereClause) {
+                            return result.whereRaw(tableMapping.whereClause)
+                        }
+                        return result;
+                    }
+                    return k[propKey](...args);
+                };
+            } else {
+                return targetValue;
+            }
+        },
+        apply(target: Knex, thisArg: any, args?: any) {
+            if (typeof args[0] === 'string') {
+                const tableMapping = tableMappings[args[0]];
+                handleTable(args, tableMapping);
+                const result = target.apply(target, args);
+                if (tableMapping && tableMapping.whereClause) {
+                    return result.whereRaw(tableMapping.whereClause)
+                }
+                return result;
+            }
+            return k.apply(thisArg, args);
+        }
+    };
+
+    return new Proxy(k, handler) as Knex;
 }

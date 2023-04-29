@@ -1,13 +1,13 @@
 // @ts-nocheck
 // This file should be placed alongside the user's files.
 
-import { makeExecutableSchema, mergeSchemas } from '@graphql-tools/schema';
-import { schemaFromExecutor, wrapSchema } from '@graphql-tools/wrap';
-import { buildHTTPExecutor } from '@graphql-tools/executor-http'
-import { ApolloServer } from 'apollo-server';
-import { deepCloneVMFunction } from "./deep-clone-vm";
-import {CreateServerConfig, Database, GraphQLServer, HelpersMap, ResolversMap} from "./types";
-import {SatsumaKnex} from "./knex";
+import {makeExecutableSchema, mergeSchemas} from '@graphql-tools/schema';
+import {schemaFromExecutor, wrapSchema} from '@graphql-tools/wrap';
+import {buildHTTPExecutor} from '@graphql-tools/executor-http'
+import {ApolloServer} from 'apollo-server';
+import {deepCloneVMFunction} from "./deep-clone-vm";
+import {CreateServerConfig, GraphQLServer, HelpersMap, ResolversMap} from "./types";
+import {createSatsumaKnex} from "./knex";
 
 let resolvers = {};
 let typeDefs = "";
@@ -78,7 +78,7 @@ export const createServer = async (config: CreateServerConfig, typeDefs?: string
 
     const databases: Record<string, any> = {};
     for (const db of config.databases) {
-        databases[db.name] = new SatsumaKnex(db);
+        databases[db.name] = createSatsumaKnex(db);
     }
 
     return new ApolloServer({
