@@ -78,7 +78,7 @@ export const createServer = async (config: CreateServerConfig, typeDefs?: string
 
     const databases: Record<string, any> = {};
     for (const db of config.databases) {
-        databases[db.name] = createSatsumaKnex(db);
+        databases[db.name] = await createSatsumaKnex(db);
     }
 
     return new ApolloServer({
