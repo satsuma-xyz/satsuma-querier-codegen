@@ -12,6 +12,6 @@
   },
   "main": "./start-server.js",
   "scripts": {
-    "build": "npx tsc start-server.ts"
+    "build": "npx tsc"
   }
 }
