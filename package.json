@@ -15,7 +15,7 @@
   },
   "main": "./index.js",
   "scripts": {
-    "build": "npx tsc index.ts"
+    "build": "mv ./versions/v1/template/package-lock.json ./versions/v1/template/pl.json; npx tsc index.ts; mv ./versions/v1/template/pl.json ./versions/v1/template/package-lock.json;"
   },
   "repository": {
     "type": "git",
