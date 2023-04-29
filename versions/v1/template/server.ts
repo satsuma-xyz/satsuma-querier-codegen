@@ -5,8 +5,6 @@ import { makeExecutableSchema, mergeSchemas } from '@graphql-tools/schema';
 import { schemaFromExecutor, wrapSchema } from '@graphql-tools/wrap';
 import { buildHTTPExecutor } from '@graphql-tools/executor-http'
 import { ApolloServer } from 'apollo-server';
-import knex from 'knex';
-import pg from 'pg';
 import { deepCloneVMFunction } from "./deep-clone-vm";
 import {CreateServerConfig, Database, GraphQLServer, HelpersMap, ResolversMap} from "./types";
 
@@ -34,20 +32,7 @@ void (async () => {
 
 const globalContext = {
     console,
-    knex,
 }
-
-/**
- * Set up a knex object for db querying
- * @param db
- */
-const createKnex = (db: Database) => {
-    pg.defaults.ssl = false;
-    return knex({
-        client: db.type,
-        connection: db.uri
-    });
-};
 
 /**
  * Create a remote executable schema from a remote graphql server.
@@ -92,7 +77,7 @@ export const createServer = async (config: CreateServerConfig, typeDefs?: string
 
     const databases: Record<string, any> = {};
     for (const db of config.databases) {
-        databases[db.name] = createKnex(db);
+        databases[db.name] = new SatsumaKnex(db);
     }
 
     return new ApolloServer({
