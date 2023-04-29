@@ -7,7 +7,6 @@ const v1: CliVersion = {
         const config: CreateServerConfig = {
             databases: args.databases,
             graphql: args.graphql,
-            tables: args.tables,
             resolverFile: args.resolverFile,
             typeDefsFile: args.typeDefsFile,
             helpersFile: args.helpersFile,
