@@ -15,7 +15,7 @@
   },
   "main": "./index.js",
   "scripts": {
-    "build": "npx tsc index.ts"
+    "build": "npx tsc index.ts --esModuleInterop && npx tsc ./versions/v1/template/server.ts --esModuleInterop"
   },
   "repository": {
     "type": "git",
