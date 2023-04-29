@@ -26,9 +26,16 @@ export const generateServer = (config: CreateServerConfig, inputDirectory: strin
 
     // copy all files in the templates directory to outputDirectory
     const templatesDirectory = path.join(__dirname, 'template');
-    const templateFiles = fs.readdirSync(templatesDirectory);
+    const templateFiles = [
+        'package.json',
+        'tsconfig.json',
+        "package-lock.json",
+        "server.ts",
+        "start-server.ts",
+        "types.ts",
+        "deep-clone-vm.ts"
+    ]
     for (const file of templateFiles) {
-        console.log({file});
         if (file.endsWith('.json') || file.endsWith('.ts')) {
             const filePath = path.join(templatesDirectory, file);
             if (fs.statSync(filePath).isFile()) {
