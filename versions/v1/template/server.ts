@@ -8,16 +8,26 @@ import { ApolloServer } from 'apollo-server';
 import knex from 'knex';
 import pg from 'pg';
 import { deepCloneVMFunction } from "./deep-clone-vm";
-import { CreateServerConfig, Database, GraphQLServer } from "./types";
-import { resolvers } from "./resolvers";
-import { typeDefs } from "./typeDefs";
+import {CreateServerConfig, Database, GraphQLServer, HelpersMap, ResolversMap} from "./types";
 
+let resolvers = {};
+let typeDefs = "";
 let helpers = {};
 
 void (async () => {
     try {
         const h = await import("./helpers");
         helpers = h.helpers;
+    } catch (e) {
+    }
+    try {
+        const r = await import("./resolvers");
+        resolvers = r.resolvers;
+    } catch (e) {
+    }
+    try {
+        const t = await import("./typeDefs");
+        typeDefs = t.typeDefs;
     } catch (e) {
     }
 })();
@@ -57,7 +67,7 @@ const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
 /**
  * Create a new schema by merging the remote schema with the customer schema.
  */
-export const createNewSchema = async (gqlServers: GraphQLServer[]) => {
+export const createNewSchema = async (gqlServers: GraphQLServer[], typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers) => {
     const safeResolvers = deepCloneVMFunction(resolvers, globalContext);
 
     const customerSchema = makeExecutableSchema({
@@ -76,8 +86,8 @@ export const createNewSchema = async (gqlServers: GraphQLServer[]) => {
     });
 };
 
-export const createServer = async (config: CreateServerConfig) => {
-    const schema = await createNewSchema(config.graphql);
+export const createServer = async (config: CreateServerConfig, typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers, helpers?: HelpersMap = helpers) => {
+    const schema = await createNewSchema(config.graphql, typeDefs, resolvers);
     const helpersSafe = deepCloneVMFunction(helpers, globalContext);
 
     const databases: Record<string, any> = {};
