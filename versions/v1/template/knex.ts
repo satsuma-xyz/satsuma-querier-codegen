@@ -17,7 +17,7 @@ export const createSatsumaKnex = async (db: Database): Promise<Knex> => {
     });
     await k.raw(`SET search_path TO ${db.search_path || "public"}`);
 
-    const tableMappings = db.tables;
+    const tableMappings = db.tables || {};
 
     const handler = {
         get(target: Knex, propKey: keyof Knex) {

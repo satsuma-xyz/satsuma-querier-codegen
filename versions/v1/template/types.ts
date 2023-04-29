@@ -9,7 +9,7 @@ export type Database = {
     name: string;
     type: 'pg';
     search_path?: string;
-    tables: TableMapping;
+    tables?: TableMapping;
 }
 
 export type GraphQLServer = {
