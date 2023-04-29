@@ -16,7 +16,6 @@ jobs:
           node-version: 16.13.1
       - run: npm i -D
       - run: npm run build
-      - run: mv ./versions/v1/template/package-lock.json ./versions/v1/template/pl.json
       - name: 'Automated Version Bump'
         uses: 'phips28/gh-action-bump-version@master'
         with:
@@ -24,6 +23,7 @@ jobs:
           major-wording: 'MAJOR,cut-major'
           patch-wording: 'patch,fixes,fix,bug'     # Providing patch-wording will override commits
           # defaulting to a patch bump.
+      - run: mv ./versions/v1/template/package-lock.json ./versions/v1/template/pl.json
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
