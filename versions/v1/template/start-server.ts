@@ -14,5 +14,16 @@ const loadConfig = (): CreateServerConfig => {
 
 export const startServerWithLocalConfig = async (): Promise<ApolloServer> => {
     const config = loadConfig();
-    return createServer(config);
+    // Load custom code
+    const resolverFile = path.resolve("./custom-queries/resolvers.ts");
+    let resolvers = {};
+    try {resolvers = (await import(resolverFile)).resolvers} catch {}
+    const typeDefsFile = path.resolve("./custom-queries/typeDefs.ts");
+    let typeDefs = "";
+    try {typeDefs = (await import(typeDefsFile)).typeDefs} catch {}
+    const helpersFile = path.resolve("./custom-queries/helpers.ts");
+    let helpers = {};
+    try {helpers = (await import(helpersFile)).helpers} catch {}
+
+    return createServer(config, typeDefs, resolvers, helpers);
 };
