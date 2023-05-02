@@ -30,5 +30,5 @@ export type CreateServerConfig = {
     graphql: GraphQLServer[];
     resolverFile: string;
     typeDefsFile: string;
-    helpersFile: string;
+    helpersFile?: string;
 }
