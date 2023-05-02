@@ -1,5 +1,5 @@
 import knex, {Knex} from 'knex';
-import {Database, TableMapping, TableReplacement} from './types';
+import {Database, TableReplacement} from './types';
 import pg from 'pg';
 
 const handleTable = (args: any[], tableMapping?: TableReplacement) => {

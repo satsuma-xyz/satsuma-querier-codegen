@@ -9,19 +9,19 @@ import {ApolloServer} from "apollo-server";
 
 const loadConfig = (): CreateServerConfig => {
     // Load the json file config.json
-    return JSON.parse(fs.readFileSync(path.resolve(__dirname, './server.json'), 'utf8')) as CreateServerConfig;
+    return JSON.parse(fs.readFileSync(path.resolve(__dirname, './server.config.json'), 'utf8')) as CreateServerConfig;
 }
 
 export const startServerWithLocalConfig = async (): Promise<ApolloServer> => {
     const config = loadConfig();
     // Load custom code
-    const resolverFile = path.resolve("./custom-queries/resolvers.ts");
+    const resolverFile = path.resolve("./resolvers.ts");
     let resolvers = {};
     try {resolvers = (await import(resolverFile)).resolvers} catch {}
-    const typeDefsFile = path.resolve("./custom-queries/typeDefs.ts");
+    const typeDefsFile = path.resolve("./typeDefs.ts");
     let typeDefs = "";
     try {typeDefs = (await import(typeDefsFile)).typeDefs} catch {}
-    const helpersFile = path.resolve("./custom-queries/helpers.ts");
+    const helpersFile = path.resolve("./helpers.ts");
     let helpers = {};
     try {helpers = (await import(helpersFile)).helpers} catch {}
 

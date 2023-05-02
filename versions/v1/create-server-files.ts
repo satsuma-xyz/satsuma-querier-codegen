@@ -6,7 +6,7 @@ import { execSync } from 'child_process';
 
 export const generateServer = (config: CreateServerConfig, metadata: Record<string, any>, inputDirectory: string, outputDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'satsuma-')), verbose?: string): string => {
     // Write the server.json
-    fs.writeFileSync(path.join(outputDirectory, 'server.json'), JSON.stringify(config));
+    fs.writeFileSync(path.join(outputDirectory, 'server.config.json'), JSON.stringify(config));
 
     // Write the satsuma config
     fs.writeFileSync(path.join(outputDirectory, '.satsuma.json'), JSON.stringify(metadata));
@@ -35,7 +35,8 @@ export const generateServer = (config: CreateServerConfig, metadata: Record<stri
         "server.ts",
         "start-server.ts",
         "types.ts",
-        "deep-clone-vm.ts"
+        "deep-clone-vm.ts",
+        "knex.ts",
     ]
     for (const file of templateFiles) {
         if (file.endsWith('.json') || file.endsWith('.ts')) {
@@ -46,7 +47,8 @@ export const generateServer = (config: CreateServerConfig, metadata: Record<stri
         }
     }
 
-    fs.copyFileSync(path.join(outputDirectory, 'pl.json'), path.join(outputDirectory, 'package-lock.json'));
+    // This gets renamed by .github action to avoid npm publish filtering it out
+    fs.renameSync(path.join(outputDirectory, 'pl.json'), path.join(outputDirectory, 'package-lock.json'));
 
     // Run npm install & typescript compile in that directory
     console.log('Installing dependencies...', {outputDirectory});
