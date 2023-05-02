@@ -11,11 +11,11 @@ export const generateServer = (config: CreateServerConfig, metadata: Record<stri
     // Write the satsuma config
     fs.writeFileSync(path.join(outputDirectory, '.satsuma.json'), JSON.stringify(metadata));
 
-    // copy resolvers.ts, typeDefs.ts, and satsuma.json from inputDirectory to outputDirectory
+    // copy resolvers.ts & typeDefs.ts from inputDirectory to outputDirectory
     const required = [
         'resolvers.ts',
         'typeDefs.ts',
-    ]
+    ];
     for (const file of required) {
         fs.copyFileSync(path.join(inputDirectory, file), path.join(outputDirectory, file));
     }

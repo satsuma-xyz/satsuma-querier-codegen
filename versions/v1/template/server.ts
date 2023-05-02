@@ -72,7 +72,7 @@ export const createNewSchema = async (gqlServers: GraphQLServer[], typeDefs?: st
     });
 };
 
-export const createServer = async (config: CreateServerConfig, typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers, helpers?: HelpersMap = helpers) => {
+export const createServer = async (config: CreateServerConfig, typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers, helpers?: HelpersMap = helpers): Promise<ApolloServer> => {
     const schema = await createNewSchema(config.graphql, typeDefs, resolvers);
     const helpersSafe = deepCloneVMFunction(helpers, globalContext);
 
