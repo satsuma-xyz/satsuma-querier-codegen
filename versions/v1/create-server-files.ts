@@ -4,13 +4,15 @@ import * as os from 'os';
 import {CreateServerConfig} from "./template/types";
 import { execSync } from 'child_process';
 
-export const generateServer = (config: CreateServerConfig, inputDirectory: string, outputDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'satsuma-')), verbose?: string): string => {
+export const generateServer = (config: CreateServerConfig, metadata: Record<string, any>, inputDirectory: string, outputDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'satsuma-')), verbose?: string): string => {
     // Write the server.json
     fs.writeFileSync(path.join(outputDirectory, 'server.json'), JSON.stringify(config));
 
+    // Write the satsuma config
+    fs.writeFileSync(path.join(outputDirectory, '.satsuma.json'), JSON.stringify(metadata));
+
     // copy resolvers.ts, typeDefs.ts, and satsuma.json from inputDirectory to outputDirectory
     const required = [
-        '.satsuma.json',
         'resolvers.ts',
         'typeDefs.ts',
     ]
