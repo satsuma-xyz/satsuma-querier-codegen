@@ -5,7 +5,7 @@ import * as path from "path";
 import * as fs from "fs";
 import {createServer} from "./server";
 import {CreateServerConfig} from "./types";
-import {ApolloServer} from "apollo-server";
+import {ApolloServer} from "@apollo/server";
 
 const loadConfig = (): CreateServerConfig => {
     // Load the json file config.json
