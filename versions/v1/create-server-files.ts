@@ -50,10 +50,5 @@ export const generateServer = (config: CreateServerConfig, metadata: Record<stri
     // This gets renamed by .github action to avoid npm publish filtering it out
     fs.renameSync(path.join(outputDirectory, 'pl.json'), path.join(outputDirectory, 'package-lock.json'));
 
-    // Run npm install & typescript compile in that directory
-    console.log('Installing dependencies...', {outputDirectory});
-    execSync('npm ci', { cwd: outputDirectory, stdio: 'ignore' });
-    execSync('npm run build', { cwd: outputDirectory, stdio: 'ignore' });
-
     return outputDirectory;
 }
