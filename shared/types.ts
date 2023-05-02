@@ -4,7 +4,7 @@ export type CliFnArgs = {
 }
 
 export type UpgradeArgs = CliFnArgs & {from: string}
-export type ServerArgs = CliFnArgs & CreateServerConfig & {outputPath: string, inputPath: string}
+export type ServerArgs = CliFnArgs & CreateServerConfig & {outputPath: string, inputPath: string, metadata: Record<string, any>}
 
 type CliFunction<T extends CliFnArgs = CliFnArgs, ReturnType = void> = (args: T) => Promise<ReturnType>;
 

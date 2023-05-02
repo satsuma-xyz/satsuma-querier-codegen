@@ -11,7 +11,7 @@ const v1: CliVersion = {
             typeDefsFile: args.typeDefsFile,
             helpersFile: args.helpersFile,
         }
-        return generateServer(config, args.inputPath, args.outputPath);
+        return generateServer(config, args.metadata, args.inputPath, args.outputPath);
     },
     types: async (args) => {
         // export const saveTypeDefs = () => createNewSchema().then(schema => {
