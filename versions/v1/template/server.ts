@@ -50,7 +50,7 @@ const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
     const remoteSchema = await schemaFromExecutor(link);
     return wrapSchema({
         schema: remoteSchema,
-        link
+        executor: link
     });
 };
 
@@ -58,11 +58,11 @@ const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
  * Create a new schema by merging the remote schema with the customer schema.
  */
 export const createNewSchema = async (gqlServers: GraphQLServer[], typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers) => {
-    // const safeResolvers = deepCloneVMFunction(resolvers, globalContext);
+    const safeResolvers = deepCloneVMFunction(resolvers, globalContext);
 
     const customerSchema = makeExecutableSchema({
         typeDefs,
-        resolvers
+        resolvers: safeResolvers
     });
 
     const remoteExecutableSchemas = await Promise.all(gqlServers.map((gqlServer) => createRemoteExecutableSchema(gqlServer)));
@@ -92,11 +92,11 @@ const createApolloServerContext = async (config: CreateServerConfig, helpers?: H
       databases[db.name] = await createSatsumaKnex(db);
   }
 
-  // const helpersSafe = deepCloneVMFunction(helpers, globalContext);
+  const helpersSafe = deepCloneVMFunction(helpers, globalContext);
 
   return {
     db: databases,
-    helpers,
+    helpers: helpersSafe,
   }
 }
 
