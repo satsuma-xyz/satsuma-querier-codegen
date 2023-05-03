@@ -10,6 +10,7 @@ import {CreateServerConfig, GraphQLServer, HelpersMap, ResolversMap} from "./typ
 import {createSatsumaKnex} from "./knex";
 import { expressMiddleware } from "@apollo/server/express4";
 import { startStandaloneServer } from '@apollo/server/standalone';
+import express from "express";
 
 
 let resolvers = {};
@@ -77,7 +78,7 @@ export const createNewSchema = async (gqlServers: GraphQLServer[], typeDefs?: st
 
 const createApolloServer = async (config: CreateServerConfig, typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers): Promise<ApolloServer> => {
   const schema = await createNewSchema(config.graphql, typeDefs, resolvers);
-  return new ApolloServer({schema});
+  return new ApolloServer({schema, introspection: true});
 }
 
 interface ApolloServerContext {
@@ -103,8 +104,9 @@ export const createExpressMiddleware = async (config: CreateServerConfig, typeDe
     const apolloServer = await createApolloServer(config, typeDefs, resolvers);
     const apolloServerContext = await createApolloServerContext(config, helpers);
 
+    await apolloServer.start();
     return expressMiddleware(apolloServer, {
-      context: apolloServerContext
+      context: async ({req}) => apolloServerContext,
     });
 };
 
@@ -113,6 +115,6 @@ export const startStandaloneServer = async (config: CreateServerConfig, typeDefs
   const apolloServerContext = await createApolloServerContext(config, helpers);
 
   return await startStandaloneServer(apolloServer, {
-    context: apolloServerContext
+    context: async ({req}) => apolloServerContext,
   }).url;
 }
