@@ -4,10 +4,14 @@
 import {makeExecutableSchema, mergeSchemas} from '@graphql-tools/schema';
 import {schemaFromExecutor, wrapSchema} from '@graphql-tools/wrap';
 import {buildHTTPExecutor} from '@graphql-tools/executor-http'
-import {ApolloServer} from 'apollo-server-express';
+import {ApolloServer} from '@apollo/server';
 import {deepCloneVMFunction} from "./deep-clone-vm";
 import {CreateServerConfig, GraphQLServer, HelpersMap, ResolversMap} from "./types";
 import {createSatsumaKnex} from "./knex";
+import { expressMiddleware } from "@apollo/server/express4";
+import { startStandaloneServer } from '@apollo/server/standalone';
+import express from "express";
+
 
 let resolvers = {};
 let typeDefs = "";
@@ -54,11 +58,11 @@ const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
  * Create a new schema by merging the remote schema with the customer schema.
  */
 export const createNewSchema = async (gqlServers: GraphQLServer[], typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers) => {
-    const safeResolvers = deepCloneVMFunction(resolvers, globalContext);
+    // const safeResolvers = deepCloneVMFunction(resolvers, globalContext);
 
     const customerSchema = makeExecutableSchema({
         typeDefs,
-        resolvers: safeResolvers
+        resolvers
     });
 
     const remoteExecutableSchemas = await Promise.all(gqlServers.map((gqlServer) => createRemoteExecutableSchema(gqlServer)));
@@ -72,20 +76,45 @@ export const createNewSchema = async (gqlServers: GraphQLServer[], typeDefs?: st
     });
 };
 
-export const createServer = async (config: CreateServerConfig, typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers, helpers?: HelpersMap = helpers): Promise<ApolloServer> => {
-    const schema = await createNewSchema(config.graphql, typeDefs, resolvers);
-    const helpersSafe = deepCloneVMFunction(helpers, globalContext);
+const createApolloServer = async (config: CreateServerConfig, typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers): Promise<ApolloServer> => {
+  const schema = await createNewSchema(config.graphql, typeDefs, resolvers);
+  return new ApolloServer({schema, introspection: true});
+}
 
-    const databases: Record<string, any> = {};
-    for (const db of config.databases) {
-        databases[db.name] = await createSatsumaKnex(db);
-    }
+interface ApolloServerContext {
+  db: Record<string, any>;
+  helpers?: HelpersMap;
+}
 
-    return new ApolloServer({
-        schema,
-        context: {
-            db: databases,
-            helpers: helpersSafe,
-        }
+const createApolloServerContext = async (config: CreateServerConfig, helpers?: HelpersMap = helpers): Promise<ApolloServerContext> => {
+  const databases: Record<string, any> = {};
+  for (const db of config.databases) {
+      databases[db.name] = await createSatsumaKnex(db);
+  }
+
+  // const helpersSafe = deepCloneVMFunction(helpers, globalContext);
+
+  return {
+    db: databases,
+    helpers,
+  }
+}
+
+export const createExpressMiddleware = async (config: CreateServerConfig, typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers, helpers?: HelpersMap = helpers): Promise<express.RequestHandler> => {
+    const apolloServer = await createApolloServer(config, typeDefs, resolvers);
+    const apolloServerContext = await createApolloServerContext(config, helpers);
+
+    await apolloServer.start();
+    return expressMiddleware(apolloServer, {
+      context: async ({req}) => apolloServerContext,
     });
 };
+
+export const startStandaloneServer = async (config: CreateServerConfig, typeDefs?: string = typeDefs, resolvers?: ResolversMap = resolvers, helpers?: HelpersMap = helpers): Promise<string> => {
+  const apolloServer = await createApolloServer(config, typeDefs, resolvers);
+  const apolloServerContext = await createApolloServerContext(config, helpers);
+
+  return await startStandaloneServer(apolloServer, {
+    context: async ({req}) => apolloServerContext,
+  }).url;
+}
