@@ -39,6 +39,7 @@ module.exports = {
   // Fine tune rules
   rules: {
     "import/no-named-as-default-member": "off",
+    "import/no-named-as-default": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     "@typescript-eslint/no-var-requires": 0,
     "@typescript-eslint/no-explicit-any": "off",

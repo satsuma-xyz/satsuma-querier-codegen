@@ -1,34 +1,36 @@
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type ResolversMap = Record<string, Function>;
 export type TypeDefs = string;
-export type HelpersMap = {
-    [p: string]: Function | HelpersMap
-};
-
-export type Database = {
-    uri: string;
-    name: string;
-    type: 'pg';
-    search_path?: string;
-    tables?: TableMapping;
+export interface HelpersMap {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  [p: string]: Function | HelpersMap;
 }
 
-export type GraphQLServer = {
-    uri: string;
+export interface Database {
+  uri: string;
+  name: string;
+  type: "pg";
+  search_path?: string;
+  tables?: TableMapping;
 }
 
-export type TableReplacement = {
-    actualName: string;
-    whereClause?: string;
+export interface GraphQLServer {
+  uri: string;
 }
 
-export type TableMapping = {
-    [knexName: string]: TableReplacement;
-};
+export interface TableReplacement {
+  actualName: string;
+  whereClause?: string;
+}
 
-export type CreateServerConfig = {
-    databases: Database[];
-    graphql: GraphQLServer[];
-    resolverFile: string;
-    typeDefsFile: string;
-    helpersFile?: string;
+export interface TableMapping {
+  [knexName: string]: TableReplacement;
+}
+
+export interface CreateServerConfig {
+  databases: Database[];
+  graphql: GraphQLServer[];
+  resolverFile: string;
+  typeDefsFile: string;
+  helpersFile?: string;
 }
