@@ -50,7 +50,7 @@ const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
     const remoteSchema = await schemaFromExecutor(link);
     return wrapSchema({
         schema: remoteSchema,
-        link
+        executor: link
     });
 };
 
