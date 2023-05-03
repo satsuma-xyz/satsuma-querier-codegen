@@ -3,16 +3,15 @@
 
 import * as path from "path";
 import * as fs from "fs";
-import {createServer} from "./server";
+import {startStandaloneServer} from "./server";
 import {CreateServerConfig} from "./types";
-import {ApolloServer} from "apollo-server-express";
 
 const loadConfig = (): CreateServerConfig => {
     // Load the json file config.json
     return JSON.parse(fs.readFileSync(path.resolve(__dirname, './server.config.json'), 'utf8')) as CreateServerConfig;
 }
 
-export const startServerWithLocalConfig = async (): Promise<ApolloServer> => {
+export const startServerWithLocalConfig = async (): Promise<void> => {
     const config = loadConfig();
     // Load custom code
     const resolverFile = path.resolve("./resolvers.ts");
@@ -25,5 +24,5 @@ export const startServerWithLocalConfig = async (): Promise<ApolloServer> => {
     let helpers = {};
     try {helpers = (await import(helpersFile)).helpers} catch {}
 
-    return createServer(config, typeDefs, resolvers, helpers);
+    await startStandaloneServer(config, typeDefs, resolvers, helpers);
 };
