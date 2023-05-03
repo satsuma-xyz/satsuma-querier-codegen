@@ -4,7 +4,7 @@
 import {makeExecutableSchema, mergeSchemas} from '@graphql-tools/schema';
 import {schemaFromExecutor, wrapSchema} from '@graphql-tools/wrap';
 import {buildHTTPExecutor} from '@graphql-tools/executor-http'
-import {ApolloServer} from 'apollo-server';
+import {ApolloServer} from 'apollo-server-express';
 import {deepCloneVMFunction} from "./deep-clone-vm";
 import {CreateServerConfig, GraphQLServer, HelpersMap, ResolversMap} from "./types";
 import {createSatsumaKnex} from "./knex";
