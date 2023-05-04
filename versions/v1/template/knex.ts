@@ -10,7 +10,9 @@ const handleTable = (args: any[], tableMapping?: TableReplacement) => {
   }
 };
 
-export const createSatsumaKnex = async (db: Database): Promise<Knex> => {
+export const createSatsumaKnex = async (
+  db: Database
+): Promise<Knex<any, unknown[]>> => {
   pg.defaults.ssl = false;
   const k = knex({
     client: db.type,
