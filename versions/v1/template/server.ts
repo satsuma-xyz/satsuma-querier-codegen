@@ -10,6 +10,8 @@ import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { schemaFromExecutor, wrapSchema } from "@graphql-tools/wrap";
 import express from "express";
 import * as http from "http";
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 import { deepCloneVMFunction, deepCloneVMFunction, createVM } from "./deep-clone-vm";
 import { createSatsumaKnex, createSatsumaKnex } from "./knex";
