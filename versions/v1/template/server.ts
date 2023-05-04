@@ -19,6 +19,7 @@ import {
   HelpersMap,
   ResolversMap,
 } from "./types";
+import {ApolloServerPluginDrainHttpServer} from "@apollo/server/dist/esm/plugin/drainHttpServer";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let resolvers = {};
