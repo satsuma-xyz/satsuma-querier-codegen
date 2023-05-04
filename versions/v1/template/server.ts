@@ -10,16 +10,12 @@ import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { schemaFromExecutor, wrapSchema } from "@graphql-tools/wrap";
 import express from "express";
 
-import { deepCloneVMFunction, deepCloneVMFunction } from "./deep-clone-vm";
+import { deepCloneVMFunction, deepCloneVMFunction, createVM } from "./deep-clone-vm";
 import { createSatsumaKnex, createSatsumaKnex } from "./knex";
 import {
   CreateServerConfig,
-  CreateServerConfig,
-  GraphQLServer,
   GraphQLServer,
   HelpersMap,
-  HelpersMap,
-  ResolversMap,
   ResolversMap,
 } from "./types";
 
@@ -81,7 +77,7 @@ export const createNewSchema = async (
   typeDefs?: string = typeDefs,
   resolvers?: ResolversMap = resolvers
 ) => {
-  const safeResolvers = deepCloneVMFunction(resolvers, globalContext);
+  const safeResolvers = deepCloneVMFunction(resolvers, createVM(globalContext));
 
   const customerSchema = makeExecutableSchema({
     typeDefs,
@@ -121,7 +117,7 @@ const createApolloServerContext = async (
     databases[db.name] = await createSatsumaKnex(db);
   }
 
-  const helpersSafe = deepCloneVMFunction(helpers, globalContext);
+  const helpersSafe = deepCloneVMFunction(helpers, createVM(globalContext));
 
   return {
     db: databases,
