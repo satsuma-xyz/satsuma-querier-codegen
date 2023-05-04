@@ -141,7 +141,7 @@ const createSatsumaQueryExpressMiddleware = (
   });
 
   satsumaMiddleware.shutdown = async () => {
-    Promise.all(
+    await Promise.all(
       Object.values(apolloServerContext.db).map(
         async (db) => await db.destroy()
       )
