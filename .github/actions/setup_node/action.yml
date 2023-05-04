@@ -1,0 +1,32 @@
+name: "Setup Node"
+description: "Setup Node and npm and install dependencies"
+runs:
+  using: "composite"
+  steps:
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Use NPM 9
+      run: npm install -g npm@9
+      shell: bash
+
+    - name: Get npm cache directory
+      id: npm-cache-dir
+      run: |
+        echo "::set-output name=dir::$(npm config get cache)"
+      shell: bash
+
+    - name: Restore npm cache
+      uses: actions/cache@v3
+      id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+      with:
+        path: ${{ steps.npm-cache-dir.outputs.dir }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
+    - name: NPM install
+      run: npm ci
+      shell: bash

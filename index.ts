@@ -1,7 +1,6 @@
-import * as v1API from './versions/v1/index';
-
+import * as v1API from "./versions/v1/index";
 
 export default {
-    v1: v1API,
-    latest: v1API
-}
+  v1: v1API,
+  latest: v1API,
+};
