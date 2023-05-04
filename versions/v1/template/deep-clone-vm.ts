@@ -1,86 +1,86 @@
-import {NodeVM} from "vm2";
+import { NodeVM } from "vm2";
 
-import {HelpersMap, ResolversMap} from "./types";
+import { HelpersMap, ResolversMap } from "./types";
 
 export const createVM = (resolverContext: Record<string, any>): NodeVM =>
-    new NodeVM({
-        sandbox: {
-            ...resolverContext,
-        },
-        console: "redirect",
-        require: {
-            external: false,
-        },
-        timeout: 1000,
-        allowAsync: true,
-        nesting: false,
-    });
+  new NodeVM({
+    sandbox: {
+      ...resolverContext,
+    },
+    console: "redirect",
+    require: {
+      external: false,
+    },
+    timeout: 1000,
+    allowAsync: true,
+    nesting: false,
+  });
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 const getArgs = (func: Function) => {
-    // First match everything inside the function argument parens.
-    const funcString = func
-        .toString()
-        .replace("async (", "async function (")
-        .replace("function(", "function (");
-    const matches = funcString.match(/function\s.*?\(([^)]*)\)/);
-    const args = matches?.[1] || ("" as string);
+  // First match everything inside the function argument parens.
+  const funcString = func
+    .toString()
+    .replace("async (", "async function (")
+    .replace("function(", "function (");
+  const matches = funcString.match(/function\s.*?\(([^)]*)\)/);
+  const args = matches?.[1] || ("" as string);
 
-    // Split the arguments string into an array comma delimited.
-    return args
-        .split(",")
-        .map((arg) => {
-            // Ensure no inline comments are parsed and trim the whitespace.
-            return arg.replace(/\/\*.*\*\//, "").trim();
-        })
-        .filter((arg) => !!arg);
+  // Split the arguments string into an array comma delimited.
+  return args
+    .split(",")
+    .map((arg) => {
+      // Ensure no inline comments are parsed and trim the whitespace.
+      return arg.replace(/\/\*.*\*\//, "").trim();
+    })
+    .filter((arg) => !!arg);
 };
 
 export const deepCloneVMFunction = (
-    obj: ResolversMap | HelpersMap,
-    vm: NodeVM,
-    map = new WeakMap()
+  obj: ResolversMap | HelpersMap,
+  vm: NodeVM,
+  map = new WeakMap()
 ) => {
-    if (obj instanceof Function) {
-        // This is where we wrap the function in the VM and run it only in the allowed context
-        const resolverFn = obj.toString();
-        const fnArgs = getArgs(obj);
-        const scriptText = `
+  if (obj instanceof Function) {
+    // This is where we wrap the function in the VM and run it only in the allowed context
+    const resolverFn = obj.toString();
+    const fnArgs = getArgs(obj);
+    const scriptText = `
             const handler = ${resolverFn};
             handler(${fnArgs.join(", ")});`;
 
-        return (...args: string[]) => {
-            const namedArgs = fnArgs.reduce((acc, arg, i) => {
-                acc[arg] = args[i];
-                return acc;
-            }, {} as Record<string, any>);
-            const sandbox = {
-                ...namedArgs,
-            };
-            return vm.run(scriptText, sandbox);
-        };
-    }
+    return (...args: string[]) => {
+      const namedArgs = fnArgs.reduce((acc, arg, i) => {
+        acc[arg] = args[i];
+        return acc;
+      }, {} as Record<string, any>);
+      const sandbox = {
+        ...namedArgs,
+      };
+      return vm.run(scriptText, sandbox);
+    };
+  }
 
-    if (map.has(obj)) {
-        return map.get(obj);
-    }
+  if (map.has(obj)) {
+    return map.get(obj);
+  }
 
-    const allDesc = Object.getOwnPropertyDescriptors(obj);
-    const cloneObj = Object.create(Object.getPrototypeOf(obj), allDesc);
+  const allDesc = Object.getOwnPropertyDescriptors(obj);
+  const cloneObj = Object.create(Object.getPrototypeOf(obj), allDesc);
 
-    map.set(obj, cloneObj);
+  map.set(obj, cloneObj);
 
-    for (const key of Reflect.ownKeys(obj)) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const value = obj[key];
+  for (const key of Reflect.ownKeys(obj)) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const value = obj[key];
 
-        cloneObj[key] =
-            value instanceof Object
-                ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                  // @ts-ignore
-                deepCloneVMFunction(value, vm, map)
-                : value;
-    }
-    return cloneObj;
+    cloneObj[key] =
+      value instanceof Object
+        ? // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          deepCloneVMFunction(value, vm, map)
+        : value;
+  }
+  return cloneObj;
 };
