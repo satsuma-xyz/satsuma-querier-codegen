@@ -153,3 +153,33 @@ export const startStandaloneServer = async (
     context: async () => apolloServerContext,
   }).url;
 };
+
+export const createStandaloneServer = async (
+    config: CreateServerConfig,
+    typeDefs?: string = typeDefs,
+    resolvers?: ResolversMap = resolvers,
+    helpers?: HelpersMap = helpers
+): Promise<Express> => {
+  const server = await createApolloServer(config, typeDefs, resolvers);
+  const context = await createApolloServerContext(config, helpers);
+
+  const app: express.Express = express();
+  const httpServer: http.Server = http.createServer(app);
+
+  server.addPlugin(
+      ApolloServerPluginDrainHttpServer({ httpServer: httpServer }),
+  );
+
+  await server.start();
+
+  app.use(
+      cors(),
+      bodyParser.json({ limit: '50mb' }),
+      expressMiddleware(server, { context }),
+  );
+
+  return {
+    httpServer,
+    app,
+  };
+}
