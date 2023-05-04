@@ -108,7 +108,7 @@ interface ApolloServerContext {
   helpers?: HelpersMap;
 }
 
-const createApolloServerContext = async (
+export const createApolloServerContext = async (
   config: CreateServerConfig,
   helpers?: HelpersMap = helpers
 ): Promise<ApolloServerContext> => {
