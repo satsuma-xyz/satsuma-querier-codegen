@@ -94,7 +94,7 @@ export const createNewSchema = async (
   });
 };
 
-const createApolloServer = async (
+export const createApolloServer = async (
   config: CreateServerConfig,
   typeDefs?: string = typeDefs,
   resolvers?: ResolversMap = resolvers
