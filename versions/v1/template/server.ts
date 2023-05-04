@@ -19,7 +19,6 @@ import {
   HelpersMap,
   ResolversMap,
 } from "./types";
-import {ApolloServerPluginDrainHttpServer} from "@apollo/server/src/plugin/drainHttpServer";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let resolvers = {};
@@ -167,10 +166,6 @@ export const createStandaloneServer = async (
 
   const app: express.Express = express();
   const httpServer: http.Server = http.createServer(app);
-
-  server.addPlugin(
-      ApolloServerPluginDrainHttpServer({ httpServer: httpServer }),
-  );
 
   await server.start();
 
