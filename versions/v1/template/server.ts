@@ -8,13 +8,13 @@ import { startStandaloneServer as startStandaloneServerApollo } from "@apollo/se
 import { buildHTTPExecutor } from "@graphql-tools/executor-http";
 import { makeExecutableSchema, mergeSchemas } from "@graphql-tools/schema";
 import { schemaFromExecutor, wrapSchema } from "@graphql-tools/wrap";
+import bodyParser from "body-parser";
+import cors from "cors";
 import express from "express";
 import * as http from "http";
-import cors from 'cors';
-import bodyParser from 'body-parser';
 
-import { deepCloneVMFunction, deepCloneVMFunction, createVM } from "./deep-clone-vm";
-import { createSatsumaKnex, createSatsumaKnex } from "./knex";
+import { createVM, deepCloneVMFunction } from "./deep-clone-vm";
+import { createSatsumaKnex } from "./knex";
 import {
   CreateServerConfig,
   GraphQLServer,
@@ -107,7 +107,7 @@ export const createApolloServer = async (
 };
 
 interface ApolloServerContext {
-  db: Record<string, any>;
+  db: Record<string, Knex<any, unknown[]>>;
   helpers?: HelpersMap;
 }
 
@@ -115,7 +115,7 @@ export const createApolloServerContext = async (
   config: CreateServerConfig,
   helpers?: HelpersMap = helpers
 ): Promise<ApolloServerContext> => {
-  const databases: Record<string, any> = {};
+  const databases: Record<string, Knex<any, unknown[]>> = {};
   for (const db of config.databases) {
     databases[db.name] = await createSatsumaKnex(db);
   }
@@ -128,19 +128,43 @@ export const createApolloServerContext = async (
   };
 };
 
+export interface SatsumaQueryExpressMiddleware extends express.RequestHandler {
+  shutdown: () => Promise<void>;
+}
+
+const createSatsumaQueryExpressMiddleware = (
+  apolloServer: ApolloServer,
+  apolloServerContext: ApolloServerContext
+): SatsumaQueryExpressMiddleware => {
+  const satsumaMiddleware = expressMiddleware(apolloServer, {
+    context: async () => apolloServerContext,
+  });
+
+  satsumaMiddleware.shutdown = async () => {
+    await Promise.all(
+      Object.values(apolloServerContext.db).map(
+        async (db) => await db.destroy()
+      )
+    );
+
+    void apolloServer.stop();
+  };
+
+  return satsumaMiddleware;
+};
+
 export const createExpressMiddleware = async (
   config: CreateServerConfig,
   typeDefs?: string = typeDefs,
   resolvers?: ResolversMap = resolvers,
   helpers?: HelpersMap = helpers
-): Promise<express.RequestHandler> => {
+): Promise<SatsumaQueryExpressMiddleware> => {
   const apolloServer = await createApolloServer(config, typeDefs, resolvers);
   const apolloServerContext = await createApolloServerContext(config, helpers);
 
   await apolloServer.start();
-  return expressMiddleware(apolloServer, {
-    context: async () => apolloServerContext,
-  });
+
+  return createSatsumaQueryExpressMiddleware(apolloServer, apolloServerContext);
 };
 
 export const startStandaloneServer = async (
@@ -158,10 +182,10 @@ export const startStandaloneServer = async (
 };
 
 export const createStandaloneServer = async (
-    config: CreateServerConfig,
-    typeDefs?: string = typeDefs,
-    resolvers?: ResolversMap = resolvers,
-    helpers?: HelpersMap = helpers
+  config: CreateServerConfig,
+  typeDefs?: string = typeDefs,
+  resolvers?: ResolversMap = resolvers,
+  helpers?: HelpersMap = helpers
 ): Promise<Express> => {
   const server = await createApolloServer(config, typeDefs, resolvers);
   const context = await createApolloServerContext(config, helpers);
@@ -172,13 +196,13 @@ export const createStandaloneServer = async (
   await server.start();
 
   app.use(
-      cors(),
-      bodyParser.json({ limit: '50mb' }),
-      expressMiddleware(server, { context }),
+    cors(),
+    bodyParser.json({ limit: "50mb" }),
+    expressMiddleware(server, { context })
   );
 
   return {
     httpServer,
     app,
   };
-}
+};
