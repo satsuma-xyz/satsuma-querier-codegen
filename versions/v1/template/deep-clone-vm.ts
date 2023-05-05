@@ -49,6 +49,7 @@ export const deepCloneVMFunction = (
             const handler = ${resolverFn};
             handler(${fnArgs.join(", ")});`;
 
+    console.log('wrapped script ', scriptText);
     return (...args: string[]) => {
       const namedArgs = fnArgs.reduce((acc, arg, i) => {
         acc[arg] = args[i];
@@ -57,6 +58,7 @@ export const deepCloneVMFunction = (
       const sandbox = {
         ...namedArgs,
       };
+      console.log('calling ', scriptText, 'with', sandbox);
       return vm.run(scriptText, sandbox);
     };
   }
