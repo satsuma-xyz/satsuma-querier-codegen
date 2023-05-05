@@ -1,9 +1,9 @@
-import { VM } from "vm2";
+import { NodeVM } from "vm2";
 
 import { HelpersMap, ResolversMap } from "./types";
 
-export const createVM = (resolverContext: Record<string, any>): VM =>
-  new VM({
+export const createVM = (resolverContext: Record<string, any>): NodeVM =>
+  new NodeVM({
     sandbox: {
       ...resolverContext,
     },
@@ -38,14 +38,14 @@ const getArgs = (func: Function) => {
 
 export const deepCloneVMFunction = (
   obj: ResolversMap | HelpersMap,
-  vm: VM,
+  vm: NodeVM,
   map = new WeakMap()
 ) => {
   if (obj instanceof Function) {
     // This is where we wrap the function in the VM and run it only in the allowed context
     const resolverFn = obj.toString();
     const scriptText = resolverFn;
-    console.log('wrapped script ', scriptText);
+    console.log('wrapped script ', `module.exports = ${scriptText}`);
     return vm.run(scriptText);
   }
 
