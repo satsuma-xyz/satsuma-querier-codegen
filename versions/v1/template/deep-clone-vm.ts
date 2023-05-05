@@ -45,7 +45,7 @@ export const deepCloneVMFunction = (
     // This is where we wrap the function in the VM and run it only in the allowed context
     const resolverFn = obj.toString();
     const scriptText = resolverFn;
-    return vm.run(scriptText);
+    return (...args: any[]) => vm.run(scriptText)(...args);
   }
 
   if (map.has(obj)) {
