@@ -45,7 +45,6 @@ export const deepCloneVMFunction = (
     // This is where we wrap the function in the VM and run it only in the allowed context
     const resolverFn = obj.toString();
     const scriptText = resolverFn;
-    console.log('wrapped script ', `module.exports = ${scriptText}`);
     return vm.run(scriptText);
   }
 
