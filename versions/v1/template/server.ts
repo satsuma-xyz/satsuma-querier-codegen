@@ -147,7 +147,7 @@ const createSatsumaQueryExpressMiddleware = (
       )
     );
 
-    await apolloServer.stop()
+    void apolloServer.stop()
   };
 
   return satsumaMiddleware;
