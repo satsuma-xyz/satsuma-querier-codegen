@@ -1,9 +1,9 @@
-import { NodeVM } from "vm2";
+import { VM } from "vm2";
 
 import { HelpersMap, ResolversMap } from "./types";
 
 export const createVM = (resolverContext: Record<string, any>): NodeVM =>
-  new NodeVM({
+  new VM({
     sandbox: {
       ...resolverContext,
     },
