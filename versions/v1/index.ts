@@ -3,6 +3,7 @@ import { generateServer } from "./create-server-files";
 import { CreateServerConfig } from "./template/types";
 import {createNewSchema} from "./template/server";
 import * as fs from "fs";
+import * as path from "path";
 import {printSchema} from "graphql";
 
 const v1: CliVersion = {
@@ -31,9 +32,8 @@ const v1: CliVersion = {
     };
     const {typeDefs} = await import(config.typeDefsFile);
     const {resolvers} = await import(config.resolverFile);
-    createNewSchema(args.graphql, typeDefs, resolvers).then(schema => {
-        fs.writeFileSync('./schema.graphql', printSchema(schema));
-    });
+    const schema = await createNewSchema(args.graphql, typeDefs, resolvers);
+    fs.writeFileSync(path.resolve(args.outputPath, './schema.graphql'), printSchema(schema));
     // child_process.execSync('graphql-codegen --config versions/v1/types-codegen.config.ts', {shell: '/bin/bash', stdio : 'pipe'});
   },
 };

@@ -14,7 +14,9 @@ type CliFunction<T extends CliFnArgs = CliFnArgs, ReturnType = void> = (
   args: T
 ) => Promise<ReturnType>;
 
-export type TypesArgs = CliFnArgs & CreateServerConfig;
+export type TypesArgs = CliFnArgs & CreateServerConfig & {
+    outputPath: string;
+};
 
 export interface CliVersion {
   server: CliFunction<ServerArgs, string>;
