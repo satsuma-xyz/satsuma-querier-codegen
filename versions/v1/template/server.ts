@@ -146,6 +146,8 @@ const createSatsumaQueryExpressMiddleware = (
         async (db) => await db.destroy()
       )
     );
+
+    await apolloServer.stop()
   };
 
   return satsumaMiddleware;
