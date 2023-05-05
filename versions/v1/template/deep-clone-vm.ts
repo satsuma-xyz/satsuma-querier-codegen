@@ -44,23 +44,9 @@ export const deepCloneVMFunction = (
   if (obj instanceof Function) {
     // This is where we wrap the function in the VM and run it only in the allowed context
     const resolverFn = obj.toString();
-    const fnArgs = getArgs(obj);
-    const scriptText = `
-            const handler = ${resolverFn};
-            handler(${fnArgs.join(", ")});`;
-
+    const scriptText = resolverFn;
     console.log('wrapped script ', scriptText);
-    return (...args: string[]) => {
-      const namedArgs = fnArgs.reduce((acc, arg, i) => {
-        acc[arg] = args[i];
-        return acc;
-      }, {} as Record<string, any>);
-      const sandbox = {
-        ...namedArgs,
-      };
-      console.log('calling ', scriptText, 'with', sandbox);
-      return vm.run(scriptText, sandbox);
-    };
+    return vm.run(scriptText);
   }
 
   if (map.has(obj)) {
