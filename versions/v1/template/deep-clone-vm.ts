@@ -2,7 +2,7 @@ import { VM } from "vm2";
 
 import { HelpersMap, ResolversMap } from "./types";
 
-export const createVM = (resolverContext: Record<string, any>): NodeVM =>
+export const createVM = (resolverContext: Record<string, any>): VM =>
   new VM({
     sandbox: {
       ...resolverContext,
@@ -38,7 +38,7 @@ const getArgs = (func: Function) => {
 
 export const deepCloneVMFunction = (
   obj: ResolversMap | HelpersMap,
-  vm: NodeVM,
+  vm: VM,
   map = new WeakMap()
 ) => {
   if (obj instanceof Function) {
