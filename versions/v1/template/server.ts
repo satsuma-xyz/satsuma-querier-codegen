@@ -174,7 +174,7 @@ export const createStandaloneServer = async (
   app.use(
       cors(),
       bodyParser.json({ limit: '50mb' }),
-      expressMiddleware(server, { context }),
+      expressMiddleware(server, { context: async () => context }),
   );
 
   return {
