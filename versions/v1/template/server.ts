@@ -201,7 +201,7 @@ export const createStandaloneServer = async (
         expressMiddleware(server, {context: async () => context}),
     );
 
-    httpServer.timeout = 1000;
+    httpServer.timeout = 30000;
 
     return {
         httpServer,
