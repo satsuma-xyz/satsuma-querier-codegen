@@ -82,6 +82,8 @@ export const createNewSchema = async (
 ) => {
   const safeResolvers = deepCloneVMFunction(resolvers, createVM(globalContext));
 
+  console.log('making schema with', {typeDefs, safeResolvers});
+
   const customerSchema = makeExecutableSchema({
     typeDefs,
     resolvers: safeResolvers,
