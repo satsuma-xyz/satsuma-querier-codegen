@@ -101,10 +101,10 @@ export const createApolloServer = async (
     config: CreateServerConfig,
     typeDefs?: string = typeDefs,
     resolvers?: ResolversMap = resolvers,
-    config?: Partial<ApolloServerOptions>
+    apolloConfig?: Partial<ApolloServerOptions>
 ): Promise<ApolloServer> => {
     const schema = await createNewSchema(config.graphql, typeDefs, resolvers);
-    return new ApolloServer({...config, schema, introspection: true});
+    return new ApolloServer({...apolloConfig, schema, introspection: true});
 };
 
 interface ApolloServerContext {
