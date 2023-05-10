@@ -101,10 +101,9 @@ export const createApolloServer = async (
     config: CreateServerConfig,
     typeDefs?: string = typeDefs,
     resolvers?: ResolversMap = resolvers,
-    apolloConfig?: Partial<ApolloServerOptions>
 ): Promise<ApolloServer> => {
     const schema = await createNewSchema(config.graphql, typeDefs, resolvers);
-    return new ApolloServer({...apolloConfig, schema, introspection: true});
+    return new ApolloServer({schema, introspection: true});
 };
 
 interface ApolloServerContext {
@@ -188,13 +187,7 @@ export const createStandaloneServer = async (
     resolvers?: ResolversMap = resolvers,
     helpers?: HelpersMap = helpers
 ): Promise<Express> => {
-    const server = await createApolloServer(config, typeDefs, resolvers, {
-        cache: {
-            get: () => null,
-            set: () => null,
-            delete: () => null,
-        }
-    });
+    const server = await createApolloServer(config, typeDefs, resolvers);
     const context = await createApolloServerContext(config, helpers);
 
     const app: express.Express = express();
@@ -207,6 +200,8 @@ export const createStandaloneServer = async (
         bodyParser.json({limit: '50mb'}),
         expressMiddleware(server, {context: async () => context}),
     );
+
+    httpServer.timeout = 1000;
 
     return {
         httpServer,
