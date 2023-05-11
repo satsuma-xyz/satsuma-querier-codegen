@@ -24,7 +24,7 @@ const gqlCodegenConfig = (schemaPath: string, outputPath: string) => ({
     schema: schemaPath,
     generates: {
         [outputPath]: {
-            plugins: ["typescript"],
+            plugins: ["typescript.js"],
         },
     },
 })
@@ -96,7 +96,7 @@ const v1: CliVersion = {
             }
         }
 
-        fs.writeFileSync(path.resolve(process.cwd(), "typescript.js"), `const {plugin} = require("@graphql-codegen/typescript");\nmodule.exports = {plugin};`);
+        fs.writeFileSync(path.resolve(process.cwd(), "typescript.js"), `const {plugin} = require("@graphql-codegen/typescript");\nmodule.exports = plugin;`);
         const gqlCodegen = gqlCodegenConfig(schemaPath, typesPath);
         await generate(gqlCodegen);
 
