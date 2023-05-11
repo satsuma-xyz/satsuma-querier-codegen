@@ -39,7 +39,7 @@ const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${le
 
 const writeTableConstants = (tableNames: string[]) => {
     return `export const tables = {
-        ${tableNames.map((tableName) => `${camelToSnakeCase(tableName).toUpperCase()}: "${tableName}";`).join("\n")}
+${tableNames.map((tableName) => `        ${camelToSnakeCase(tableName).toUpperCase()}: "${tableName}",`).join("\n")}
     }`;
 }
 
