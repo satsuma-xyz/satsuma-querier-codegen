@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as path from "path";
 import {printSchema} from "graphql";
 import type {CodegenConfig} from "@graphql-codegen/cli";
-import {generate} from "@graphql-codegen/cli";
+import {executeCodegen} from "@graphql-codegen/cli";
 
 const gqlCodegenConfig = (schemaPath: string, outputPath: string): CodegenConfig => ({
     overwrite: true,
@@ -86,7 +86,7 @@ const v1: CliVersion = {
         }
 
         const gqlCodegen = gqlCodegenConfig(schemaPath, typesPath);
-        await generate(gqlCodegen);
+        console.log('output', await executeCodegen(gqlCodegen));
 
         // Write config to config file
         // const configPath = path.resolve(args.outputPath, "codegen.ts");
