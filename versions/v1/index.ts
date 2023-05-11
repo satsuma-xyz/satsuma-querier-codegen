@@ -30,7 +30,7 @@ const FILE_EDIT_WARNING = `
  ***************/
 `;
 
-const camelToSnakeCase = str => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 
 const writeTableConstants = (tableNames: string[]) => {
     return `export const tables = {
