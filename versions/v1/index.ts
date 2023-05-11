@@ -7,24 +7,13 @@ import * as path from "path";
 import {printSchema} from "graphql";
 import type {CodegenConfig} from "@graphql-codegen/cli";
 import {generate} from "@graphql-codegen/cli";
-import * as child_process from "child_process";
 
-const GQL_CODEGEN_CONFIG: CodegenConfig = {
-    overwrite: true,
-    schema: "./schema.graphql",
-    generates: {
-        ["./schema.ts"]: {
-            plugins: ["typescript.js"],
-        },
-    },
-};
-
-const gqlCodegenConfig = (schemaPath: string, outputPath: string) => ({
+const gqlCodegenConfig = (schemaPath: string, outputPath: string): CodegenConfig => ({
     overwrite: true,
     schema: schemaPath,
     generates: {
         [outputPath]: {
-            plugins: ["typescript.js"],
+            plugins: ["typescript"],
         },
     },
 })
@@ -96,7 +85,6 @@ const v1: CliVersion = {
             }
         }
 
-        fs.writeFileSync(path.resolve(process.cwd(), "typescript.js"), `const {plugin} = require("@graphql-codegen/typescript");\nmodule.exports = plugin;`);
         const gqlCodegen = gqlCodegenConfig(schemaPath, typesPath);
         await generate(gqlCodegen);
 
