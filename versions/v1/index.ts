@@ -18,24 +18,21 @@ const gqlCodegenConfig = (schemaPath: string, outputPath: string): CodegenConfig
     },
 });
 
+const WARNING_LINES = [
+    'WARNING: Do not manually edit this file.',
+    '',
+    'Modifying this file may cause unintended side effects and may be overwritten',
+    'during the build process or when updating the codebase.',
+    '',
+    'Make changes to this file by running `npx @satsuma/cli types ...`',
+];
+
+const FILE_EDIT_WARNING_GQL  = WARNING_LINES.map(line => ` # ${line}`).join("\n")
+
 const FILE_EDIT_WARNING_JS  = `
 /***************
- * WARNING: Do not manually edit this file.
- * 
- * Modifying this file may cause unintended side effects and may be overwritten
- * during the build process or when updating the codebase. 
- * 
- * Make changes to this file by running \`npx @satsuma/cli types ...\`
+${WARNING_LINES.map(line => ` * ${line}`).join("\n")}
  ***************/
-`;
-
-const FILE_EDIT_WARNING_GQL  = `
-# WARNING: Do not manually edit this file.
-# 
-# Modifying this file may cause unintended side effects and may be overwritten
-# during the build process or when updating the codebase. 
-# 
-# Make changes to this file by running \`npx @satsuma/cli types ...\`
 `;
 
 const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
