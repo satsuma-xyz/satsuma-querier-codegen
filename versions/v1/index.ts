@@ -85,7 +85,9 @@ const v1: CliVersion = {
 
         const schemaString = printSchema(schema);
         fs.writeFileSync(schemaPath, `${FILE_EDIT_WARNING_GQL}\n\n${schemaString}\n`);
-        await generate(gqlCodegenConfig(schemaPath, typesPath));
+        const gqlCodegen = gqlCodegenConfig(schemaPath, typesPath);
+        console.log({gqlCodegen});
+        await generate(gqlCodegen);
 
         // Open the file and add the table constants and the warning
         const typesContent = fs.readFileSync(typesPath, {encoding: "utf-8"});
