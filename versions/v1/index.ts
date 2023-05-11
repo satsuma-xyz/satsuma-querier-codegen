@@ -7,7 +7,6 @@ import * as path from "path";
 import {printSchema} from "graphql";
 import type {CodegenConfig} from "@graphql-codegen/cli";
 import {generate} from "@graphql-codegen/cli";
-import "@graphql-codegen/typescript";
 import * as child_process from "child_process";
 
 const GQL_CODEGEN_CONFIG: CodegenConfig = {
@@ -15,10 +14,20 @@ const GQL_CODEGEN_CONFIG: CodegenConfig = {
     schema: "./schema.graphql",
     generates: {
         ["./schema.ts"]: {
-            plugins: ["typescript"],
+            plugins: ["typescript.js"],
         },
     },
 };
+
+const gqlCodegenConfig = (schemaPath: string, outputPath: string) => ({
+    overwrite: true,
+    schema: schemaPath,
+    generates: {
+        [outputPath]: {
+            plugins: ["typescript"],
+        },
+    },
+})
 
 const WARNING_LINES = [
     'WARNING: Do not manually edit this file.',
@@ -87,17 +96,18 @@ const v1: CliVersion = {
             }
         }
 
-        // const gqlCodegen = gqlCodegenConfig(schemaPath, typesPath);
-        // await generate(gqlCodegen);
+        fs.writeFileSync(path.resolve(process.cwd(), "typescript.js"), `const {plugin} = require("@graphql-codegen/typescript");\nmodule.exports = {plugin};`);
+        const gqlCodegen = gqlCodegenConfig(schemaPath, typesPath);
+        await generate(gqlCodegen);
 
         // Write config to config file
-        const configPath = path.resolve(args.outputPath, "codegen.ts");
-        const configContent = `export default ${JSON.stringify(GQL_CODEGEN_CONFIG, null, 4)};\n`;
-        fs.writeFileSync(configPath, configContent);
-        child_process.execSync(`npx graphql-codegen --config ${configPath}`, {cwd: args.outputPath});
+        // const configPath = path.resolve(args.outputPath, "codegen.ts");
+        // const configContent = `export default ${JSON.stringify(GQL_CODEGEN_CONFIG, null, 4)};\n`;
+        // fs.writeFileSync(configPath, configContent);
+        // child_process.execSync(`npx graphql-codegen --config ${configPath}`, {cwd: args.outputPath});
 
         // Clean up the config
-        fs.unlinkSync(configPath);
+        // fs.unlinkSync(configPath);
 
         // Open the file and add the table constants and the warning
         const typesContent = fs.readFileSync(typesPath, {encoding: "utf-8"});
