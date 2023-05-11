@@ -7,6 +7,7 @@ import * as path from "path";
 import {printSchema} from "graphql";
 import type {CodegenConfig} from "@graphql-codegen/cli";
 import {generate} from "@graphql-codegen/cli";
+import "@graphql-codegen/typescript";
 
 const gqlCodegenConfig = (schemaPath: string, outputPath: string): CodegenConfig => ({
     overwrite: true,
