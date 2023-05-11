@@ -9,6 +9,12 @@ import {buildHTTPExecutor} from "@graphql-tools/executor-http";
 import {makeExecutableSchema, mergeSchemas} from "@graphql-tools/schema";
 import {schemaFromExecutor, wrapSchema} from "@graphql-tools/wrap";
 import bodyParser from "body-parser";
+import * as R from 'ramda';
+import * as _ from 'lodash';
+import * as rxjs from 'rxjs';
+import * as validator from 'validator';
+import * as uuid from 'uuid';
+import * as moment from 'moment';
 import cors from "cors";
 import express from "express";
 import * as http from "http";
@@ -55,6 +61,12 @@ void (async () => {
 
 const globalContext = {
     console,
+    R,
+    _,
+    rxjs,
+    validator,
+    uuid,
+    moment
 };
 
 /**
