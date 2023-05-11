@@ -8,16 +8,17 @@ import {printSchema} from "graphql";
 import type {CodegenConfig} from "@graphql-codegen/cli";
 import {generate} from "@graphql-codegen/cli";
 import "@graphql-codegen/typescript";
+import * as child_process from "child_process";
 
-const gqlCodegenConfig = (schemaPath: string, outputPath: string): CodegenConfig => ({
+const GQL_CODEGEN_CONFIG: CodegenConfig = {
     overwrite: true,
-    schema: schemaPath,
+    schema: "./schema.graphql",
     generates: {
-        [outputPath]: {
+        ["./schema.ts"]: {
             plugins: ["typescript"],
         },
     },
-});
+};
 
 const WARNING_LINES = [
     'WARNING: Do not manually edit this file.',
@@ -73,6 +74,9 @@ const v1: CliVersion = {
         const {resolvers} = await import(config.resolverFile);
         const schema = await createNewSchema(args.graphql, typeDefs, resolvers);
         const schemaPath = path.resolve(args.outputPath, './schema.graphql');
+        const schemaString = printSchema(schema);
+        fs.writeFileSync(schemaPath, `${FILE_EDIT_WARNING_GQL}\n\n${schemaString}\n`);
+
         const typesPath = path.resolve(args.outputPath, "./schema.ts");
 
         const tableNames: string[] = [];
@@ -83,11 +87,17 @@ const v1: CliVersion = {
             }
         }
 
-        const schemaString = printSchema(schema);
-        fs.writeFileSync(schemaPath, `${FILE_EDIT_WARNING_GQL}\n\n${schemaString}\n`);
-        const gqlCodegen = gqlCodegenConfig(schemaPath, typesPath);
-        console.log({gqlCodegen: JSON.stringify(gqlCodegen, null, 2)});
-        await generate(gqlCodegen);
+        // const gqlCodegen = gqlCodegenConfig(schemaPath, typesPath);
+        // await generate(gqlCodegen);
+
+        // Write config to config file
+        const configPath = path.resolve(args.outputPath, "codegen.ts");
+        const configContent = `import {CodegenConfig} from "@graphql-codegen/cli\n\nexport default ${JSON.stringify(GQL_CODEGEN_CONFIG, null, 4)};\n`;
+        fs.writeFileSync(configPath, configContent);
+        child_process.execSync(`npx graphql-codegen --config ${configPath}`, {cwd: args.outputPath});
+
+        // Clean up the config
+        fs.unlinkSync(configPath);
 
         // Open the file and add the table constants and the warning
         const typesContent = fs.readFileSync(typesPath, {encoding: "utf-8"});
