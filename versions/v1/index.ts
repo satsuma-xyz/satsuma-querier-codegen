@@ -25,8 +25,7 @@ const FILE_EDIT_WARNING = `
  * Modifying this file may cause unintended side effects and may be overwritten
  * during the build process or when updating the codebase. 
  * 
- * Make changes to the appropriate configuration files or use provided APIs
- * to customize the behavior of this module.
+ * Make changes to this file by running \`npx @satsuma/cli types ...\`
  ***************/
 `;
 
