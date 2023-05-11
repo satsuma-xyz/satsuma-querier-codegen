@@ -92,7 +92,7 @@ const v1: CliVersion = {
 
         // Write config to config file
         const configPath = path.resolve(args.outputPath, "codegen.ts");
-        const configContent = `import {CodegenConfig} from "@graphql-codegen/cli\n\nexport default ${JSON.stringify(GQL_CODEGEN_CONFIG, null, 4)};\n`;
+        const configContent = `export default ${JSON.stringify(GQL_CODEGEN_CONFIG, null, 4)};\n`;
         fs.writeFileSync(configPath, configContent);
         child_process.execSync(`npx graphql-codegen --config ${configPath}`, {cwd: args.outputPath});
 
