@@ -18,7 +18,7 @@ const gqlCodegenConfig = (schemaPath: string, outputPath: string): CodegenConfig
     },
 });
 
-const FILE_EDIT_WARNING = `
+const FILE_EDIT_WARNING_JS  = `
 /***************
  * WARNING: Do not manually edit this file.
  * 
@@ -27,6 +27,15 @@ const FILE_EDIT_WARNING = `
  * 
  * Make changes to this file by running \`npx @satsuma/cli types ...\`
  ***************/
+`;
+
+const FILE_EDIT_WARNING_GQL  = `
+# WARNING: Do not manually edit this file.
+# 
+# Modifying this file may cause unintended side effects and may be overwritten
+# during the build process or when updating the codebase. 
+# 
+# Make changes to this file by running \`npx @satsuma/cli types ...\`
 `;
 
 const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
@@ -77,8 +86,12 @@ const v1: CliVersion = {
         }
 
         const schemaString = printSchema(schema);
-        fs.writeFileSync(schemaPath, `${FILE_EDIT_WARNING}\n\n${writeTableConstants(tableNames)}\n\n\n${schemaString}\n`);
+        fs.writeFileSync(schemaPath, `${FILE_EDIT_WARNING_GQL}\n\n${schemaString}\n`);
         await generate(gqlCodegenConfig(schemaPath, typesPath));
+
+        // Open the file and add the table constants and the warning
+        const typesContent = fs.readFileSync(typesPath, {encoding: "utf-8"});
+        fs.writeFileSync(typesPath, `${FILE_EDIT_WARNING_JS}\n\n${writeTableConstants(tableNames)}\n\n${typesContent}`);
     },
 };
 
