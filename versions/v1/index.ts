@@ -7,16 +7,16 @@ import * as path from "path";
 import {printSchema} from "graphql";
 import type {CodegenConfig} from "@graphql-codegen/cli";
 import {executeCodegen} from "@graphql-codegen/cli";
-import {plugin as tsPlugin} from "../../shared/gql-ts/src/index";
 
 const gqlCodegenConfig = (schemaPath: string, outputPath: string): CodegenConfig => ({
     overwrite: true,
     schema: schemaPath,
-
-    //@ts-ignore
+    pluginLoader: async (name: string) => {
+        return await import(name);
+    },
     generates: {
         [outputPath]: {
-            plugins: [tsPlugin],
+            plugins: ["typescript"],
         },
     },
 })
