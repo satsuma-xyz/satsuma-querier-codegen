@@ -5,7 +5,7 @@
   "dependencies": {
     "@apollo/federation": "^0.38.1",
     "@apollo/server": "^4.7.1",
-    "@graphql-codegen/core": "^3.1.0",
+    "@graphql-codegen/cli": "^3.3.1",
     "@graphql-codegen/typescript": "^3.0.4",
     "@types/node": "^16.11.7",
     "axios": "^1.4.0",
