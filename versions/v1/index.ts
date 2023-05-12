@@ -88,17 +88,12 @@ const v1: CliVersion = {
             }
         }
 
+        // Manually call the codegen tool & write outputs
         const gqlCodegen = gqlCodegenConfig(schemaPath, typesPath);
-        console.log('output', await executeCodegen(gqlCodegen));
-
-        // Write config to config file
-        // const configPath = path.resolve(args.outputPath, "codegen.ts");
-        // const configContent = `export default ${JSON.stringify(GQL_CODEGEN_CONFIG, null, 4)};\n`;
-        // fs.writeFileSync(configPath, configContent);
-        // child_process.execSync(`npx graphql-codegen --config ${configPath}`, {cwd: args.outputPath});
-
-        // Clean up the config
-        // fs.unlinkSync(configPath);
+        const outputs = await executeCodegen(gqlCodegen);
+        for (const output of outputs) {
+            fs.writeFileSync(output.filename, output.content);
+        }
 
         // Open the file and add the table constants and the warning
         const typesContent = fs.readFileSync(typesPath, {encoding: "utf-8"});
