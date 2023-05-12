@@ -32,10 +32,9 @@ const WARNING_LINES = [
 
 const FILE_EDIT_WARNING_GQL  = WARNING_LINES.map(line => ` # ${line}`).join("\n")
 
-const FILE_EDIT_WARNING_JS  = `
-/***************
+const FILE_EDIT_WARNING_JS  = `/*********************************************
 ${WARNING_LINES.map(line => ` * ${line}`).join("\n")}
- ***************/
+ *********************************************/
 `;
 
 const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
