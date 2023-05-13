@@ -93,6 +93,7 @@ export const createNewSchema = async (
     resolvers?: ResolversMap = resolvers
 ) => {
     const safeResolvers = deepCloneVMFunction(resolvers, createVM(globalContext));
+    console.log('safeResolvers', safeResolvers);
 
     const customerSchema = makeExecutableSchema({
         typeDefs,
