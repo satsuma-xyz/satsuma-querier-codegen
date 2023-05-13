@@ -84,16 +84,23 @@ const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
     });
 };
 
+const log = (debug: boolean, ...args: any[]) => {
+    if (debug) {
+        console.log(...args);
+    }
+}
+
 /**
  * Create a new schema by merging the remote schema with the customer schema.
  */
 export const createNewSchema = async (
     gqlServers: GraphQLServer[],
     typeDefs?: string = typeDefs,
-    resolvers?: ResolversMap = resolvers
+    resolvers?: ResolversMap = resolvers,
+    debug?: boolean = false
 ) => {
     const safeResolvers = deepCloneVMFunction(resolvers, createVM(globalContext));
-    console.log('safeResolvers', safeResolvers);
+    log(debug, 'safeResolvers', JSON.stringify(safeResolvers));
 
     const customerSchema = makeExecutableSchema({
         typeDefs,
@@ -114,8 +121,9 @@ export const createApolloServer = async (
     config: CreateServerConfig,
     typeDefs?: string = typeDefs,
     resolvers?: ResolversMap = resolvers,
+    debug?: boolean = false
 ): Promise<ApolloServer> => {
-    const schema = await createNewSchema(config.graphql, typeDefs, resolvers);
+    const schema = await createNewSchema(config.graphql, typeDefs, resolvers, debug);
     return new ApolloServer({schema, introspection: true});
 };
 
@@ -126,7 +134,8 @@ interface ApolloServerContext {
 
 export const createApolloServerContext = async (
     config: CreateServerConfig,
-    helpers?: HelpersMap = helpers
+    helpers?: HelpersMap = helpers,
+    debug?: boolean = false
 ): Promise<ApolloServerContext> => {
     const databases: Record<string, Knex<any, unknown[]>> = {};
     for (const db of config.databases) {
@@ -134,6 +143,8 @@ export const createApolloServerContext = async (
     }
 
     const helpersSafe = deepCloneVMFunction(helpers, createVM(globalContext));
+    log(debug, 'helpersSafe', JSON.stringify(helpersSafe));
+    log(debug, 'dbs', JSON.stringify(databases));
 
     return {
         db: databases,
