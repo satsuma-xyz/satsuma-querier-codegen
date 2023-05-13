@@ -39,8 +39,8 @@ ${WARNING_LINES.map(line => ` * ${line}`).join("\n")}
 
 const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 
-const writeTableConstants = (tableNames: string[]) => {
-    return `export const tables = {
+const writeDbConstants = (tableNames: string[], schema = 'public') => {
+    return `export const schema = '${schema}';\n\nexport const tables = {
 ${tableNames.map((tableName) => `        ${camelToSnakeCase(tableName).toUpperCase()}: "${tableName}",`).join("\n")}
 }`;
 }
@@ -96,7 +96,7 @@ const v1: CliVersion = {
 
         // Open the file and add the table constants and the warning
         const typesContent = fs.readFileSync(typesPath, {encoding: "utf-8"});
-        fs.writeFileSync(typesPath, `${FILE_EDIT_WARNING_JS}\n\n${writeTableConstants(tableNames)}\n\n${typesContent}`);
+        fs.writeFileSync(typesPath, `${FILE_EDIT_WARNING_JS}\n\n${writeDbConstants(tableNames, args.databases[0]?.search_path)}\n\n${typesContent}`);
     },
 };
 
