@@ -209,10 +209,11 @@ export const createStandaloneServer = async (
     config: CreateServerConfig,
     typeDefs?: string = typeDefs,
     resolvers?: ResolversMap = resolvers,
-    helpers?: HelpersMap = helpers
+    helpers?: HelpersMap = helpers,
+    debug?: boolean = false
 ): Promise<Express> => {
-    const server = await createApolloServer(config, typeDefs, resolvers);
-    const context = await createApolloServerContext(config, helpers);
+    const server = await createApolloServer(config, typeDefs, resolvers, debug);
+    const context = await createApolloServerContext(config, helpers, debug);
 
     const app: express.Express = express();
     const httpServer: http.Server = http.createServer(app);
