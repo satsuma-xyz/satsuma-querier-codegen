@@ -24,6 +24,10 @@ export const createSatsumaKnex = async (
 
   const handler = {
     get(target: Knex, propKey: keyof Knex) {
+      if (propKey === "schema") {
+        return db.search_path || "public";
+      }
+
       const targetValue = target[propKey];
       if (typeof targetValue === "function") {
         return function (this: Knex, ...args: any[]) {

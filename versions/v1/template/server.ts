@@ -15,6 +15,7 @@ import * as rxjs from 'rxjs';
 import * as validator from 'validator';
 import * as uuid from 'uuid';
 import * as moment from 'moment';
+import * as dateFns from 'date-fns';
 import cors from "cors";
 import express from "express";
 import * as http from "http";
@@ -60,13 +61,13 @@ void (async () => {
 })();
 
 const globalContext = {
-    console,
     R,
     _,
     rxjs,
     validator,
     uuid,
-    moment
+    moment,
+    dateFns,
 };
 
 /**
