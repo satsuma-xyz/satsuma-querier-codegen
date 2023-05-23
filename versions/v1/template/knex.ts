@@ -1,7 +1,7 @@
 import knex, { Knex } from "knex";
 import pg from "pg";
 
-import { Database, TableReplacement } from "./types";
+import {Database, TableMapping, TableReplacement} from "./types";
 
 const handleTable = (args: any[], tableMapping?: TableReplacement) => {
   if (tableMapping) {
@@ -27,8 +27,24 @@ export const createSatsumaKnex = async (
       if (propKey === "schema") {
         return db.search_path || "public";
       }
+
+      // Special case to return all tables
       if (propKey === "tables") {
-        return tableMappings;
+        return Object.entries(tableMappings).map(([name, _tableMapping]) => name);
+      }
+
+      // Handle raw queries by injecting CTEs.
+      // Currently this breaks if there's another WITH clause in the query.
+      if (propKey === "raw") {
+        return function (this: Knex, ...args: any[]) {
+          for (const [table, mapping] of Object.entries(tableMappings)) {
+            this.withRaw(
+                table,
+                `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`
+            )
+          }
+          return this.raw(args[0], ...args.slice(1));
+        };
       }
 
       const targetValue = target[propKey];
