@@ -23,7 +23,7 @@ const WARNING_LINES = [
     'Modifying this file may cause unintended side effects and may be overwritten',
     'during the build process or when updating the codebase.',
     '',
-    'Make changes to this file by running `npx @satsuma/cli types ...`',
+    'Make changes to this file by running `npx @satsuma/cli codegen ...`',
 ];
 const FILE_EDIT_WARNING_GQL = WARNING_LINES.map(line => ` # ${line}`).join("\n")
 const FILE_EDIT_WARNING_JS = `/*********************************************
