@@ -22,12 +22,6 @@ export const createSatsumaKnex = async (
 
   // Get all table mappings and add them to the knex instance as CTEs.
   const tableMappings = db.tables || {};
-  for (const [table, mapping] of Object.entries(tableMappings)) {
-    k.withRaw(
-        table,
-        `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`
-    )
-  }
 
   const handler = {
     get(target: Knex, propKey: (keyof Knex | "tables")) {
@@ -38,6 +32,13 @@ export const createSatsumaKnex = async (
       // Special case to return all tables
       if (propKey === "tables") {
         return Object.entries(tableMappings).map(([name, _tableMapping]) => name);
+      }
+
+      for (const [table, mapping] of Object.entries(tableMappings)) {
+        target.with(
+            table,
+            `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`
+        )
       }
 
       return target[propKey];
