@@ -24,14 +24,17 @@ export const createSatsumaKnex = async (
   const tableMappings = db.tables || {};
 
   const handler = {
-    get(target: Knex, propKey: (keyof Knex | "tables")) {
+    get(target: Knex, propKey: (keyof Knex | "tables" | "tablesRaw")) {
       if (propKey === "schema") {
         return db.search_path || "public";
       }
 
-      // Special case to return all tables
+      // Special case to return tables info
       if (propKey === "tables") {
         return Object.fromEntries(Object.entries(tableMappings).map(([name, _tableMapping]) => [name, name]));
+      }
+      if (propKey === "tablesRaw") {
+        return tableMappings;
       }
 
       for (const [table, mapping] of Object.entries(tableMappings)) {
