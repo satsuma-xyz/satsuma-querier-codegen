@@ -23,9 +23,12 @@ export const createSatsumaKnex = async (
   const tableMappings = db.tables || {};
 
   const handler = {
-    get(target: Knex, propKey: keyof Knex) {
+    get(target: Knex, propKey: (keyof Knex | "tables")) {
       if (propKey === "schema") {
         return db.search_path || "public";
+      }
+      if (propKey === "tables") {
+        return tableMappings;
       }
 
       const targetValue = target[propKey];
