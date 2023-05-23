@@ -31,7 +31,7 @@ export const createSatsumaKnex = async (
 
       // Special case to return all tables
       if (propKey === "tables") {
-        return Object.entries(tableMappings).map(([name, _tableMapping]) => name);
+        return Object.fromEntries(Object.entries(tableMappings).map(([name, _tableMapping]) => [name, name]));
       }
 
       for (const [table, mapping] of Object.entries(tableMappings)) {
