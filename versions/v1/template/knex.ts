@@ -37,7 +37,9 @@ export const createSatsumaKnex = async (
       for (const [table, mapping] of Object.entries(tableMappings)) {
         target.with(
             table,
-            `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`
+            target.raw(
+                `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`,
+            )
         )
       }
 
