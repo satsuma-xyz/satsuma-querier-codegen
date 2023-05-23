@@ -14,6 +14,12 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["start-server.ts", "server.ts", "knex.ts", "deep-clone-vm.ts", "types.ts"],
+  "include": [
+    "start-server.ts",
+    "server.ts",
+    "knex.ts",
+    "deep-clone-vm.ts",
+    "types.ts"
+  ],
   "exclude": ["node_modules"]
 }

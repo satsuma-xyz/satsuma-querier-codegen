@@ -40,7 +40,7 @@
   },
   "main": "./index.js",
   "scripts": {
-    "build": "npx tsc index.ts --esModuleInterop && npx tsc ./versions/v1/template/server.ts --esModuleInterop",
+    "build": "npx tsc index.ts --esModuleInterop && npx tsc versions/v1/server.ts --esModuleInterop",
     "test": "NODE_ENV=test ./node_modules/.bin/jest --runInBand --passWithNoTests",
     "lint": "eslint --cache --max-warnings 0 \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --project tsconfig.json --noEmit"

@@ -1,4 +1,4 @@
-import { CreateServerConfig } from "../versions/v1/template/types";
+import { CreateServerConfig } from "../versions/v1/types";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface CliFnArgs {}
