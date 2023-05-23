@@ -14,7 +14,7 @@ export const createSatsumaKnex = async (
   db: Database
 ): Promise<Knex<any, unknown[]>> => {
   pg.defaults.ssl = false;
-  let k = knex({
+  const k = knex({
     client: db.type,
     connection: db.uri,
   });
@@ -22,17 +22,6 @@ export const createSatsumaKnex = async (
 
   // Get all table mappings and add them to the knex instance as CTEs.
   const tableMappings = db.tables || {};
-
-  for (const [table, mapping] of Object.entries(tableMappings)) {
-    // @ts-ignore
-    k = k.with(
-        table,
-        k.raw(
-            `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`,
-        )
-    )
-  }
-
 
   const handler = {
     get(target: Knex, propKey: (keyof Knex | "tables" | "tablesRaw")) {
@@ -48,7 +37,35 @@ export const createSatsumaKnex = async (
         return tableMappings;
       }
 
-      return target[propKey];
+      // Handle raw queries by injecting CTEs.
+      // Currently, this breaks if there's another WITH clause in the query.
+      if (propKey === "raw") {
+        return function (this: Knex, ...args: any[]) {
+          let ctes: Array<string> = [];
+          Object.entries(tableMappings).forEach(([table, mapping]) => {
+            ctes.push(`"${table}" AS (SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`);
+          });
+          return this.raw(`WITH ${ctes.join(', ')}${args[0]}`, ...args.slice(1));
+        };
+      }
+
+      const targetValue = target[propKey];
+      if (typeof targetValue === "function") {
+        return function (this: Knex, ...args: any[]) {
+          if (typeof args[0] === "string") {
+            const tableMapping = tableMappings[args[0]];
+            handleTable(args, tableMapping);
+            const result = targetValue.apply(target, args);
+            if (tableMapping && tableMapping.whereClause) {
+              return result.whereRaw(tableMapping.whereClause);
+            }
+            return result;
+          }
+          return k[propKey](...args);
+        };
+      } else {
+        return targetValue;
+      }
     },
     apply(target: Knex, thisArg: any, args?: any) {
       if (typeof args[0] === "string") {
