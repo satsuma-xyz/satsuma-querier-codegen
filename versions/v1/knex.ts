@@ -42,10 +42,9 @@ export const createSatsumaKnex = async (
       if (propKey === "raw") {
         return function (this: Knex, ...args: any[]) {
           let ctes: Array<string> = [];
-          Object.entries(tableMappings).forEach(([table, mapping]) => {
-            ctes.push(`"${table}" AS (SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`);
-          });
-          return this.raw(`WITH ${ctes.join(', ')}${args[0]}`, ...args.slice(1));
+          Object.entries(tableMappings)
+              .map(([table, mapping]) => `"${table}" AS (SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`)
+          return target.raw(`WITH ${ctes.join(', ')}${args[0]}`, ...args.slice(1));
         };
       }
 
