@@ -23,8 +23,6 @@ jobs:
           major-wording: 'MAJOR,cut-major'
           patch-wording: 'patch,fixes,fix,bug'     # Providing patch-wording will override commits
           # defaulting to a patch bump.
-      - run: mv ./versions/v1/package-lock.json ./versions/v1/pl.json
       - uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
-      - run: mv ./versions/v1/pl.json ./versions/v1/package-lock.json
