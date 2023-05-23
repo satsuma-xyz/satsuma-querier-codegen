@@ -41,10 +41,9 @@ export const createSatsumaKnex = async (
       // Currently, this breaks if there's another WITH clause in the query.
       if (propKey === "raw") {
         return function (this: Knex, ...args: any[]) {
-          let ctes: Array<string> = [];
-          Object.entries(tableMappings)
+          const CTEs = Object.entries(tableMappings)
               .map(([table, mapping]) => `"${table}" AS (SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`)
-          return target.raw(`WITH ${ctes.join(', ')}${args[0]}`, ...args.slice(1));
+          return target.raw(`WITH ${CTEs.join(', ')}${args[0]}`, ...args.slice(1));
         };
       }
 
