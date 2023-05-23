@@ -38,24 +38,23 @@ ${tableNames.map((tableName) => `        ${camelToSnakeCase(tableName).toUpperCa
 }
 
 const existingTypes = `
-    import Knex from 'knex';
-    
-    export type Database = Knex & {
-        schema: string;
-        tables: Array<string>;
-        tablesRaw: Record<string, {name: string; description?: string}>;
-    }
-    
-    export interface HelpersMap {
-      [p: string]: Function | HelpersMap;
-    }
+export type Database = {
+    schema: string;
+    tables: Array<string>;
+    tablesRaw: Record<string, {name: string; description?: string}>;
+    // Todo: This is actually a knex object, but we don't want to import knex here, so we just used any
+} & any;
 
-    export type Context = {
-        db: {
-            entities: Database;
-        },
-        helpers: HelpersMap
-    }
+export interface HelpersMap {
+  [p: string]: Function | HelpersMap;
+}
+
+export type Context = {
+    db: {
+        entities: Database;
+    },
+    helpers: HelpersMap
+}
 
 `
 

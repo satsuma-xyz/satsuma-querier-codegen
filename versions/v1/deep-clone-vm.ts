@@ -6,8 +6,9 @@ export const createVM = (resolverContext: Record<string, any>): NodeVM =>
   new NodeVM({
     sandbox: {
       ...resolverContext,
+      console: console
     },
-    console: "redirect",
+    console: "off",
     require: {
       external: false,
     },
@@ -15,26 +16,6 @@ export const createVM = (resolverContext: Record<string, any>): NodeVM =>
     allowAsync: true,
     nesting: false,
   });
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-const getArgs = (func: Function) => {
-  // First match everything inside the function argument parens.
-  const funcString = func
-    .toString()
-    .replace("async (", "async function (")
-    .replace("function(", "function (");
-  const matches = funcString.match(/function\s.*?\(([^)]*)\)/);
-  const args = matches?.[1] || ("" as string);
-
-  // Split the arguments string into an array comma delimited.
-  return args
-    .split(",")
-    .map((arg) => {
-      // Ensure no inline comments are parsed and trim the whitespace.
-      return arg.replace(/\/\*.*\*\//, "").trim();
-    })
-    .filter((arg) => !!arg);
-};
 
 export const deepCloneVMFunction = (
   obj: ResolversMap | HelpersMap,
