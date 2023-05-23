@@ -21,6 +21,7 @@ export interface GraphQLServer {
 export interface TableReplacement {
   actualName: string;
   whereClause?: string;
+  description?: string;
 }
 
 export interface TableMapping {
