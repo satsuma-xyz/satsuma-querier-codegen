@@ -14,7 +14,7 @@ export const createSatsumaKnex = async (
   db: Database
 ): Promise<Knex<any, unknown[]>> => {
   pg.defaults.ssl = false;
-  const k = knex({
+  let k = knex({
     client: db.type,
     connection: db.uri,
   });
@@ -22,6 +22,17 @@ export const createSatsumaKnex = async (
 
   // Get all table mappings and add them to the knex instance as CTEs.
   const tableMappings = db.tables || {};
+
+  for (const [table, mapping] of Object.entries(tableMappings)) {
+    // @ts-ignore
+    k = k.with(
+        table,
+        k.raw(
+            `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`,
+        )
+    )
+  }
+
 
   const handler = {
     get(target: Knex, propKey: (keyof Knex | "tables" | "tablesRaw")) {
@@ -35,15 +46,6 @@ export const createSatsumaKnex = async (
       }
       if (propKey === "tablesRaw") {
         return tableMappings;
-      }
-
-      for (const [table, mapping] of Object.entries(tableMappings)) {
-        target.with(
-            table,
-            target.raw(
-                `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`,
-            )
-        )
       }
 
       return target[propKey];
