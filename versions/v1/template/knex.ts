@@ -20,7 +20,14 @@ export const createSatsumaKnex = async (
   });
   await k.raw(`SET search_path TO ${db.search_path || "public"}`);
 
+  // Get all table mappings and add them to the knex instance as CTEs.
   const tableMappings = db.tables || {};
+  for (const [table, mapping] of Object.entries(tableMappings)) {
+    k.withRaw(
+        table,
+        `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`
+    )
+  }
 
   const handler = {
     get(target: Knex, propKey: (keyof Knex | "tables")) {
@@ -33,37 +40,7 @@ export const createSatsumaKnex = async (
         return Object.entries(tableMappings).map(([name, _tableMapping]) => name);
       }
 
-      // Handle raw queries by injecting CTEs.
-      // Currently this breaks if there's another WITH clause in the query.
-      if (propKey === "raw") {
-        return function (this: Knex, ...args: any[]) {
-          for (const [table, mapping] of Object.entries(tableMappings)) {
-            this.withRaw(
-                table,
-                `SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""}`
-            )
-          }
-          return this.raw(args[0], ...args.slice(1));
-        };
-      }
-
-      const targetValue = target[propKey];
-      if (typeof targetValue === "function") {
-        return function (this: Knex, ...args: any[]) {
-          if (typeof args[0] === "string") {
-            const tableMapping = tableMappings[args[0]];
-            handleTable(args, tableMapping);
-            const result = targetValue.apply(target, args);
-            if (tableMapping && tableMapping.whereClause) {
-              return result.whereRaw(tableMapping.whereClause);
-            }
-            return result;
-          }
-          return k[propKey](...args);
-        };
-      } else {
-        return targetValue;
-      }
+      return target[propKey];
     },
     apply(target: Knex, thisArg: any, args?: any) {
       if (typeof args[0] === "string") {
