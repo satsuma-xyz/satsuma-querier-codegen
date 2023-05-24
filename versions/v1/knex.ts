@@ -23,6 +23,9 @@ export const createSatsumaKnex = async (
   // Get all table mappings and add them to the knex instance as CTEs.
   const tableMappings = db.tables || {};
 
+  const CTEs = Object.entries(tableMappings)
+      .map(([table, mapping]) => `"${table}" AS (SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`)
+
   const handler = {
     get(target: Knex, propKey: (keyof Knex | "tables" | "tablesRaw")) {
       if (propKey === "schema") {
@@ -41,9 +44,8 @@ export const createSatsumaKnex = async (
       // Currently, this breaks if there's another WITH clause in the query.
       if (propKey === "raw") {
         return function (this: Knex, ...args: any[]) {
-          const CTEs = Object.entries(tableMappings)
-              .map(([table, mapping]) => `"${table}" AS (SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`)
-          return target.raw(`WITH ${CTEs.join(',\n')}\n${args[0]}`, ...args.slice(1));
+          const queryWithCTEs = `WITH ${CTEs.join(',\n')}\n${args[0]}`
+          return target.raw(queryWithCTEs, ...args.slice(1));
         };
       }
 
@@ -65,6 +67,7 @@ export const createSatsumaKnex = async (
         return targetValue;
       }
     },
+
     apply(target: Knex, thisArg: any, args?: any) {
       if (typeof args[0] === "string") {
         const tableMapping = tableMappings[args[0]];
