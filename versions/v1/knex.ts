@@ -43,7 +43,7 @@ export const createSatsumaKnex = async (
         return function (this: Knex, ...args: any[]) {
           const CTEs = Object.entries(tableMappings)
               .map(([table, mapping]) => `"${table}" AS (SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`)
-          return target.raw(`WITH ${CTEs.join(', ')}${args[0]}`, ...args.slice(1));
+          return target.raw(`WITH ${CTEs.join(',\n')}\n${args[0]}`, ...args.slice(1));
         };
       }
 
