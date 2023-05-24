@@ -18,18 +18,19 @@ export const createSatsumaKnex = async (
     client: db.type,
     connection: db.uri,
   });
-  await k.raw(`SET search_path TO ${db.search_path || "public"}`);
+  const schema = db.search_path || "public"
+  await k.raw(`SET search_path TO ${schema}`);
 
   // Get all table mappings and add them to the knex instance as CTEs.
   const tableMappings = db.tables || {};
 
   const CTEs = Object.entries(tableMappings)
-      .map(([table, mapping]) => `"${table}" AS (SELECT * FROM ${mapping.actualName} ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`)
+      .map(([table, mapping]) => `"${table}" AS (SELECT * FROM "${schema}"."${mapping.actualName}" ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`)
 
   const handler = {
     get(target: Knex, propKey: (keyof Knex | "tables" | "tablesRaw" | "dbUri")) {
       if (propKey === "schema") {
-        return db.search_path || "public";
+        return schema;
       }
 
       // Special case to return tables info
