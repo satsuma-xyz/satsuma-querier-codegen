@@ -39,6 +39,7 @@ ${tableNames.map((tableName) => `        ${camelToSnakeCase(tableName).toUpperCa
 
 const existingTypes = `
 export type Database = {
+    dbUri: string;
     schema: string;
     tables: Array<string>;
     tablesRaw: Record<string, {name: string; description?: string}>;
