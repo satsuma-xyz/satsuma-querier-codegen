@@ -28,7 +28,7 @@ export const createSatsumaKnex = async (
       .map(([table, mapping]) => `"${table}" AS (SELECT * FROM "${schema}"."${mapping.actualName}" ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`)
 
   const handler = {
-    get(target: Knex, propKey: (keyof Knex | "tables" | "tablesRaw" | "dbUri")) {
+    get(target: Knex, propKey: (keyof Knex | "tables" | "tablesRaw")) {
       if (propKey === "schema") {
         return schema;
       }
@@ -39,9 +39,6 @@ export const createSatsumaKnex = async (
       }
       if (propKey === "tablesRaw") {
         return tableMappings;
-      }
-      if (propKey === "dbUri") {
-        return db.uri;
       }
 
       // Handle raw queries by injecting CTEs.
