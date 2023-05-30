@@ -6,7 +6,6 @@ export const createVM = (resolverContext: Record<string, any>): NodeVM =>
   new NodeVM({
     sandbox: {
       ...resolverContext,
-      console: console
     },
     console: "off",
     require: {
