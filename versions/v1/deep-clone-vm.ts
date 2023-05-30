@@ -7,7 +7,7 @@ export const createVM = (resolverContext: Record<string, any>): NodeVM =>
     sandbox: {
       ...resolverContext,
     },
-    console: "off",
+    console: "redirect",
     require: {
       external: false,
     },
