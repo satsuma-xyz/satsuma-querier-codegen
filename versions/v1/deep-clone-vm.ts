@@ -12,7 +12,7 @@ export const createVM = (resolverContext: Record<string, any>): NodeVM =>
     require: {
       external: false,
     },
-    timeout: 25_000,
+    timeout: 60_000,
     allowAsync: true,
     nesting: false,
   });
