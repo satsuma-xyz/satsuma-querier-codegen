@@ -20,6 +20,9 @@ import cors from "cors";
 import express from "express";
 import * as http from "http";
 
+import {resolvers as satsumaResolvers} from "./satsuma-gql/resolvers";
+import {typeDefs as satsumaTypeDefs} from "./satsuma-gql/typeDefs";
+
 import {createVM, deepCloneVMFunction} from "./deep-clone-vm";
 import {createSatsumaKnex} from "./knex";
 import {
@@ -108,13 +111,18 @@ export const createNewSchema = async (
         resolvers: safeResolvers,
     });
 
+    const satsumaHelperSchema = makeExecutableSchema({
+        typeDefs: satsumaTypeDefs,
+        resolvers: satsumaResolvers,
+    });
+
     const remoteExecutableSchemas = await Promise.all(
         gqlServers.map((gqlServer) => createRemoteExecutableSchema(gqlServer))
     );
 
     // Merge the two schemas
     return mergeSchemas({
-        schemas: [...remoteExecutableSchemas, customerSchema],
+        schemas: [...remoteExecutableSchemas, satsumaHelperSchema, customerSchema],
     });
 };
 

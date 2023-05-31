@@ -39,9 +39,8 @@ ${tableNames.map((tableName) => `        ${camelToSnakeCase(tableName).toUpperCa
 
 const existingTypes = `
 export type Database = {
-    dbUri: string;
     schema: string;
-    tables: Array<string>;
+    tables: Record<string, string>;
     tablesRaw: Record<string, {name: string; description?: string}>;
     // Todo: This is actually a knex object, but we don't want to import knex here, so we just used any
 } & any;
@@ -56,7 +55,6 @@ export type Context = {
     },
     helpers: HelpersMap
 }
-
 `
 
 export async function typeGen(config: CreateServerConfig, outputPath: string) {
