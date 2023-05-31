@@ -78,7 +78,7 @@ const globalContext = {
  * Create a remote executable schema from a remote graphql server.
  * @param gqlServer
  */
-const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
+export const createRemoteExecutableSchema = async (gqlServer: GraphQLServer) => {
     const link = buildHTTPExecutor({
         endpoint: gqlServer.uri,
     });

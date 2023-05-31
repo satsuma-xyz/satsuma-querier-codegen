@@ -1,9 +1,10 @@
 import {CodegenConfig, executeCodegen} from "@graphql-codegen/cli";
 import {CreateServerConfig} from "./types";
-import {createNewSchema} from "./server";
-import path from "path";
-import {printSchema} from "graphql/index";
-import fs from "fs";
+import {createRemoteExecutableSchema} from "./server";
+import {mergeTypeDefs} from '@graphql-tools/merge';
+import * as path from "path";
+import {print, printSchema} from "graphql/index";
+import * as fs from "fs";
 
 const gqlCodegenConfig = (schemaPath: string, outputPath: string): CodegenConfig => ({
     overwrite: true,
@@ -59,10 +60,13 @@ export type Context = {
 
 export async function typeGen(config: CreateServerConfig, outputPath: string) {
     const {typeDefs} = await import(config.typeDefsFile);
-    const {resolvers} = await import(config.resolverFile);
-    const schema = await createNewSchema(config.graphql, typeDefs, resolvers);
+    const remoteSchema = await createRemoteExecutableSchema(config.graphql[0]);
+    const remoteTypeDefs = printSchema(remoteSchema);
+
+    const schema = mergeTypeDefs([typeDefs, remoteTypeDefs]);
     const schemaPath = path.resolve(outputPath, './schema.graphql');
-    const schemaString = printSchema(schema);
+    const schemaString = print(schema);
+
     fs.writeFileSync(schemaPath, `${FILE_EDIT_WARNING_GQL}\n\n${schemaString}\n`);
 
     const typesPath = path.resolve(outputPath, "./schema.ts");
