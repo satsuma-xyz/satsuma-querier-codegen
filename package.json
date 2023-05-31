@@ -1,6 +1,6 @@
 {
   "name": "@satsuma/codegen",
-  "version": "1.4.5",
+  "version": "1.4.6",
   "description": "",
   "dependencies": {
     "@apollo/federation": "^0.38.1",
