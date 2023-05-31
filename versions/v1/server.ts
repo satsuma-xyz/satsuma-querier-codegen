@@ -8,6 +8,7 @@ import {startStandaloneServer as startStandaloneServerApollo} from "@apollo/serv
 import {buildHTTPExecutor} from "@graphql-tools/executor-http";
 import {makeExecutableSchema, mergeSchemas} from "@graphql-tools/schema";
 import {schemaFromExecutor, wrapSchema} from "@graphql-tools/wrap";
+const { print } = require('graphql')
 import bodyParser from "body-parser";
 import * as R from 'ramda';
 import * as _ from 'lodash';
@@ -122,7 +123,9 @@ export const createNewSchema = async (
 
     // Merge the two schemas
     return mergeSchemas({
-        schemas: [...remoteExecutableSchemas, satsumaHelperSchema, customerSchema],
+        schemas: [...remoteExecutableSchemas],
+        resolvers: _.merge(safeResolvers, satsumaResolvers),
+        typeDefs: [typeDefs, satsumaTypeDefs].join("\n"),
     });
 };
 
