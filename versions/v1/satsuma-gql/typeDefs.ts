@@ -12,8 +12,6 @@ export const typeDefs = `
     
     type Query {
         # Your type definitions here
-        testing(skip: Int = 0, limit: Int = 100): [CustomResponseItem]!
         customQueryHelpers: CustomQueryHelpers
-        randomEntityCountTest: RandomEntityCountTest!
     }
 `;
