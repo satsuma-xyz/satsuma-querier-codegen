@@ -107,16 +107,6 @@ export const createNewSchema = async (
     const safeResolvers = deepCloneVMFunction(resolvers, createVM(globalContext));
     log(debug, 'safeResolvers', JSON.stringify(safeResolvers));
 
-    const customerSchema = makeExecutableSchema({
-        typeDefs,
-        resolvers: safeResolvers,
-    });
-
-    const satsumaHelperSchema = makeExecutableSchema({
-        typeDefs: satsumaTypeDefs,
-        resolvers: satsumaResolvers,
-    });
-
     const remoteExecutableSchemas = await Promise.all(
         gqlServers.map((gqlServer) => createRemoteExecutableSchema(gqlServer))
     );

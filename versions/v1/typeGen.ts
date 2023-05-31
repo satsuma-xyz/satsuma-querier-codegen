@@ -56,7 +56,7 @@ export type Context = {
     },
     helpers: HelpersMap
 }
-`
+`;
 
 export async function typeGen(config: CreateServerConfig, outputPath: string) {
     const {typeDefs} = await import(config.typeDefsFile);
