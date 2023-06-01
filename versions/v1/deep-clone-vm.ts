@@ -2,6 +2,8 @@ import { NodeVM } from "vm2";
 
 import { HelpersMap, ResolversMap } from "./types";
 
+const REDIRECTED_CONSOLE = "\n\nFROM VM:\n";
+
 export const createVM = (resolverContext: Record<string, any>): NodeVM => {
     const vm = new NodeVM({
         sandbox: {
@@ -18,11 +20,11 @@ export const createVM = (resolverContext: Record<string, any>): NodeVM => {
 
     // Listen to the console events here
     vm.on('console.log', (...args) => {
-        console.log(...args);
+        console.log(REDIRECTED_CONSOLE, ...args, "\n");
     });
 
     vm.on('console.error', (...args) => {
-        console.error(...args);
+        console.error(REDIRECTED_CONSOLE, ...args, "\n");
     });
 
     vm.on('console.table', (...args) => {
@@ -30,11 +32,11 @@ export const createVM = (resolverContext: Record<string, any>): NodeVM => {
     });
 
     vm.on('console.info', (...args) => {
-        console.info(...args);
+        console.info(REDIRECTED_CONSOLE, ...args, "\n");
     });
 
     vm.on('console.debug', (...args) => {
-        console.debug(...args);
+        console.debug(REDIRECTED_CONSOLE, ...args, "\n");
     });
 
     vm.on('console.trace', (...args) => {
