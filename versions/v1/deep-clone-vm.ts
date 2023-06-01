@@ -2,19 +2,55 @@ import { NodeVM } from "vm2";
 
 import { HelpersMap, ResolversMap } from "./types";
 
-export const createVM = (resolverContext: Record<string, any>): NodeVM =>
-  new NodeVM({
-    sandbox: {
-      ...resolverContext,
-    },
-    console: "redirect",
-    require: {
-      external: false,
-    },
-    timeout: 60_000,
-    allowAsync: true,
-    nesting: false,
-  });
+export const createVM = (resolverContext: Record<string, any>): NodeVM => {
+    const vm = new NodeVM({
+        sandbox: {
+            ...resolverContext,
+        },
+        console: "redirect",
+        require: {
+            external: false,
+        },
+        timeout: 60_000,
+        allowAsync: true,
+        nesting: false,
+    });
+
+    // Listen to the console events here
+    vm.on('console.log', (...args) => {
+        console.log(...args);
+    });
+
+    vm.on('console.error', (...args) => {
+        console.error(...args);
+    });
+
+    vm.on('console.table', (...args) => {
+        console.table(...args);
+    });
+
+    vm.on('console.info', (...args) => {
+        console.info(...args);
+    });
+
+    vm.on('console.debug', (...args) => {
+        console.debug(...args);
+    });
+
+    vm.on('console.trace', (...args) => {
+        console.trace(...args);
+    });
+
+    vm.on('console.assert', (...args) => {
+        console.assert(...args);
+    });
+
+    vm.on('console.clear', () => {
+        console.clear();
+    });
+
+    return vm;
+}
 
 export const deepCloneVMFunction = (
   obj: ResolversMap | HelpersMap,
