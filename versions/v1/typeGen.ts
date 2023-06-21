@@ -33,7 +33,7 @@ ${WARNING_LINES.map(line => ` * ${line}`).join("\n")}
 `;
 const camelToSnakeCase = (str: string) => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 const writeDbConstants = (tableNames: string[], schema = 'public') => {
-    return `export const schema = '${schema}';\n\nexport const tables = {
+    return `// schema and tables are here for reference only.\n// use context.db.entities.schema and context.db.entities.tables to access these variables\nconst schema = '${schema}';\n\nconst tables = {
 ${tableNames.map((tableName) => `        ${camelToSnakeCase(tableName).toUpperCase()}: "${tableName}",`).join("\n")}
 }`;
 }
