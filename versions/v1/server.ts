@@ -127,9 +127,7 @@ export const createApolloServer = async (
     resolvers?: ResolversMap = resolvers,
     debug?: boolean = false
 ): Promise<ApolloServer> => {
-    console.log('resolverFile', config.resolverFile);
     const importPath = path.dirname(config.resolverFile);
-    console.log('importPath', importPath);
     const schema = await createNewSchema(importPath, config.graphql, typeDefs, resolvers, debug);
     return new ApolloServer({schema, introspection: true});
 };
@@ -149,8 +147,9 @@ export const createApolloServerContext = async (
         databases[db.name] = await createSatsumaKnex(db);
     }
 
-    const helpersPath = path.dirname(config.helpersFile);
-    console.log('helpersPath', helpersPath);
+    console.log('resolverFile1', config.resolverFile);
+    const helpersPath = path.dirname(config.resolverFile);
+    console.log('resolverFile2', resolverFile);
     const helpersSafe = deepCloneVMFunction(helpers, createVM(helpersPath, globalContext));
     log(debug, 'helpersSafe', JSON.stringify(helpersSafe));
     log(debug, 'dbs', JSON.stringify(databases));
