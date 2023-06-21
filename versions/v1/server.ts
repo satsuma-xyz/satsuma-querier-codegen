@@ -128,6 +128,7 @@ export const createApolloServer = async (
     debug?: boolean = false
 ): Promise<ApolloServer> => {
     const importPath = path.dirname(config.resolverFile);
+    console.log('importPath', importPath);
     const schema = await createNewSchema(importPath, config.graphql, typeDefs, resolvers, debug);
     return new ApolloServer({schema, introspection: true});
 };
@@ -148,6 +149,7 @@ export const createApolloServerContext = async (
     }
 
     const helpersPath = path.dirname(config.helpersFile);
+    console.log('helpersPath', helpersPath);
     const helpersSafe = deepCloneVMFunction(helpers, createVM(helpersPath, globalContext));
     log(debug, 'helpersSafe', JSON.stringify(helpersSafe));
     log(debug, 'dbs', JSON.stringify(databases));
