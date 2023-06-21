@@ -20,6 +20,7 @@ import * as dateFns from 'date-fns';
 import cors from "cors";
 import express from "express";
 import * as http from "http";
+import * as path from 'path';
 
 import {resolvers as satsumaResolvers} from "./satsuma-gql/resolvers";
 import {typeDefs as satsumaTypeDefs} from "./satsuma-gql/typeDefs";
@@ -99,12 +100,13 @@ const log = (debug: boolean, ...args: any[]) => {
  * Create a new schema by merging the remote schema with the customer schema.
  */
 export const createNewSchema = async (
+    importPath: string,
     gqlServers: GraphQLServer[],
     typeDefs?: string = typeDefs,
     resolvers?: ResolversMap = resolvers,
     debug?: boolean = false
 ) => {
-    const safeResolvers = deepCloneVMFunction(resolvers, createVM(globalContext));
+    const safeResolvers = deepCloneVMFunction(resolvers, createVM(importPath, globalContext));
     log(debug, 'safeResolvers', JSON.stringify(safeResolvers));
 
     const remoteExecutableSchemas = await Promise.all(
@@ -125,7 +127,8 @@ export const createApolloServer = async (
     resolvers?: ResolversMap = resolvers,
     debug?: boolean = false
 ): Promise<ApolloServer> => {
-    const schema = await createNewSchema(config.graphql, typeDefs, resolvers, debug);
+    const importPath = path.dirname(config.resolverFile);
+    const schema = await createNewSchema(importPath, config.graphql, typeDefs, resolvers, debug);
     return new ApolloServer({schema, introspection: true});
 };
 
@@ -144,7 +147,8 @@ export const createApolloServerContext = async (
         databases[db.name] = await createSatsumaKnex(db);
     }
 
-    const helpersSafe = deepCloneVMFunction(helpers, createVM(globalContext));
+    const helpersPath = path.dirname(config.helpersFile);
+    const helpersSafe = deepCloneVMFunction(helpers, createVM(helpersPath, globalContext));
     log(debug, 'helpersSafe', JSON.stringify(helpersSafe));
     log(debug, 'dbs', JSON.stringify(databases));
 

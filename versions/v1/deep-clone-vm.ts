@@ -4,14 +4,14 @@ import { HelpersMap, ResolversMap } from "./types";
 
 const REDIRECTED_CONSOLE = "\n\nFROM VM:\n";
 
-export const createVM = (resolverContext: Record<string, any>): NodeVM => {
+export const createVM = (path: string, resolverContext: Record<string, any>): NodeVM => {
     const vm = new NodeVM({
         sandbox: {
             ...resolverContext,
         },
         console: "redirect",
         require: {
-            root: "./",
+            root: path,
             external: true,
             builtin: [],
         },
