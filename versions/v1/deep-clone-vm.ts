@@ -11,7 +11,9 @@ export const createVM = (resolverContext: Record<string, any>): NodeVM => {
         },
         console: "redirect",
         require: {
-            external: false,
+            root: "./",
+            external: true,
+            builtin: [],
         },
         timeout: 60_000,
         allowAsync: true,
