@@ -127,6 +127,7 @@ export const createApolloServer = async (
     resolvers?: ResolversMap = resolvers,
     debug?: boolean = false
 ): Promise<ApolloServer> => {
+    console.log('resolverFile', config.resolverFile);
     const importPath = path.dirname(config.resolverFile);
     console.log('importPath', importPath);
     const schema = await createNewSchema(importPath, config.graphql, typeDefs, resolvers, debug);
