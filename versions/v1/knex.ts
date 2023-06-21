@@ -35,7 +35,10 @@ export const createSatsumaKnex = async (
 
       // Special case to return tables info
       if (propKey === "tables") {
-        return Object.fromEntries(Object.entries(tableMappings).map(([name, _tableMapping]) => [name, name]));
+        return {
+          ...Object.fromEntries(Object.entries(tableMappings).map(([name, _tableMapping]) => [name, name])),
+          ...Object.fromEntries(Object.entries(tableMappings).map(([name, _tableMapping]) => [name.toUpperCase(), name])),
+        };
       }
       if (propKey === "tablesRaw") {
         return tableMappings;

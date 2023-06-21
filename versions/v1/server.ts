@@ -146,7 +146,7 @@ export const createApolloServerContext = async (
     for (const db of config.databases) {
         databases[db.name] = await createSatsumaKnex(db);
     }
-    
+
     const importPath = path.dirname(config.resolverFile);
     const helpersSafe = deepCloneVMFunction(helpers, createVM(importPath, globalContext));
     log(debug, 'helpersSafe', JSON.stringify(helpersSafe));
