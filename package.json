@@ -26,7 +26,6 @@
     "@types/knex": "^0.16.1",
     "@types/lodash": "^4.14.195",
     "@types/pg": "^8.6.6",
-    "@types/ramda": "^0.29.3",
     "@typescript-eslint/eslint-plugin": "^5.59.2",
     "eslint": "^8.23.1",
     "eslint-config-prettier": "^8.3.0",
