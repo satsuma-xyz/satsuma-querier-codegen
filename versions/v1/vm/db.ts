@@ -23,17 +23,25 @@ export const addDBsToVM = async (vm: SatsumaVM, dbs: Database[]) => {
             password: params.password
         });
 
+        const schema = db.search_path || "public"
+        const tableMappings = db.tables || {};
+
+        const CTEs = Object.entries(tableMappings)
+            .map(([table, mapping]) => `"${table}" AS (SELECT * FROM "${schema}"."${mapping.actualName}" ${mapping.whereClause ? `WHERE ${mapping.whereClause}` : ""})`);
+
         vm.jail.setSync(`__executeQuery__${db.name}__query`, new ivm.Reference((query: any, args: any) => {
             return new Promise(async (resolve, reject) => {
                 try {
-                    resolve(new ivm.ExternalCopy(await client.query(query, args)).copyInto());
+                    const queryWithCTEs = CTEs.length === 0 ? query : `WITH ${CTEs.join(',\n')}\n${query}`
+                    console.log({queryWithCTEs});
+                    resolve(new ivm.ExternalCopy(await client.query(`SET search_path TO ${schema}; ${queryWithCTEs}`, args)).copyInto());
                 } catch (error) {
                     reject(error);
                 }
             });
         }));
 
-        await vm.context.evalClosure(`
+        const code = `
             additionalContext.db.${db.name} = {}
             additionalContext.db.${db.name}.query = (query, args) => {
                 const result = __executeQuery__test__query.applySyncPromise(
@@ -42,7 +50,7 @@ export const addDBsToVM = async (vm: SatsumaVM, dbs: Database[]) => {
                     { arguments: { copy: true } }
                 );
                 return result;
-            }
+            };
             additionalContext.db.${db.name}.find = (query, args) => {
                 const result = __executeQuery__test__query.applySyncPromise(
                     undefined,
@@ -50,8 +58,15 @@ export const addDBsToVM = async (vm: SatsumaVM, dbs: Database[]) => {
                     { arguments: { copy: true } }
                 );
                 return result[0];
-            }
-        `);
+            };
+            additionalContext.db.${db.name}.schema = "${schema}";
+            additionalContext.db.${db.name}.tables = JSON.parse(\`${JSON.stringify({
+                ...Object.fromEntries(Object.entries(tableMappings).map(([name, _tableMapping]) => [name, name])),
+                ...Object.fromEntries(Object.entries(tableMappings).map(([name, _tableMapping]) => [name.toUpperCase(), name])),
+            })}\`);
+        `;
+
+        await vm.context.evalClosure(code);
     }
 
     await vm.jail.set(`__destroyDBs`, new ivm.Callback(async function () {
