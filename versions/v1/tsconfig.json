@@ -17,8 +17,8 @@
   "include": [
     "start-server.ts",
     "server.ts",
-    "knex.ts",
-    "deep-clone-vm.ts",
+    "vm/knex.ts",
+    "vm/deep-clone-vm.ts",
     "types.ts"
   ],
   "exclude": ["node_modules"]

@@ -1,5 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type ResolversMap = Record<string, Function>;
+export interface ResolversMap {
+  [p: string]: Function | ResolversMap;
+}
+
 export type TypeDefs = string;
 export interface HelpersMap {
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -7,7 +10,7 @@ export interface HelpersMap {
 }
 
 export interface Database {
-  uri: string;
+  uri?: string;
   name: string;
   type: "pg";
   search_path?: string;

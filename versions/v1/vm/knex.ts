@@ -1,7 +1,7 @@
 import knex, { Knex } from "knex";
 import pg from "pg";
 
-import {Database, TableMapping, TableReplacement} from "./types";
+import {Database, TableMapping, TableReplacement} from "../types";
 
 const handleTable = (args: any[], tableMapping?: TableReplacement) => {
   if (tableMapping) {
@@ -46,12 +46,14 @@ export const createSatsumaKnex = async (
 
       // Handle raw queries by injecting CTEs.
       // Currently, this breaks if there's another WITH clause in the query.
-      if (propKey === "raw") {
-        return function (this: Knex, ...args: any[]) {
-          const queryWithCTEs = `WITH ${CTEs.join(',\n')}\n${args[0]}`
-          return target.raw(queryWithCTEs, ...args.slice(1));
-        };
-      }
+      // if (propKey === "raw") {
+      //   return function (this: Knex, ...args: any[]) {
+      //     const queryWithCTEs = CTEs.length === 0 ? args[0] : `WITH ${CTEs.join(',\n')}\n${args[0]}`
+      //
+      //     console.log('Running', queryWithCTEs, args.slice(1));
+      //     return target.raw(queryWithCTEs, ...args.slice(1));
+      //   };
+      // }
 
       const targetValue = target[propKey];
       if (typeof targetValue === "function") {

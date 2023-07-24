@@ -10,13 +10,6 @@ import {makeExecutableSchema, mergeSchemas} from "@graphql-tools/schema";
 import {schemaFromExecutor, wrapSchema} from "@graphql-tools/wrap";
 const { print } = require('graphql')
 import bodyParser from "body-parser";
-import * as R from 'ramda';
-import * as _ from 'lodash';
-import * as rxjs from 'rxjs';
-import * as validator from 'validator';
-import * as uuid from 'uuid';
-import * as moment from 'moment';
-import * as dateFns from 'date-fns';
 import cors from "cors";
 import express from "express";
 import * as http from "http";
@@ -25,8 +18,8 @@ import * as path from 'path';
 import {resolvers as satsumaResolvers} from "./satsuma-gql/resolvers";
 import {typeDefs as satsumaTypeDefs} from "./satsuma-gql/typeDefs";
 
-import {createVM, deepCloneVMFunction} from "./deep-clone-vm";
-import {createSatsumaKnex} from "./knex";
+import {createVM, deepCloneVMResolvers} from "./vm/deep-clone-vm";
+import {createSatsumaKnex} from "./vm/knex";
 import {
     CreateServerConfig,
     GraphQLServer,
@@ -106,7 +99,7 @@ export const createNewSchema = async (
     resolvers?: ResolversMap = resolvers,
     debug?: boolean = false
 ) => {
-    const safeResolvers = deepCloneVMFunction(resolvers, createVM(importPath, globalContext));
+    const safeResolvers = deepCloneVMResolvers(resolvers, createVM(globalContext));
     log(debug, 'safeResolvers', JSON.stringify(safeResolvers));
 
     const remoteExecutableSchemas = await Promise.all(
@@ -133,28 +126,19 @@ export const createApolloServer = async (
 };
 
 interface ApolloServerContext {
-    db: Record<string, Knex<any, unknown[]>>;
-    helpers?: HelpersMap;
+    dbInternal: Record<string, Knex<any, unknown[]>>;
 }
 
 export const createApolloServerContext = async (
     config: CreateServerConfig,
-    helpers?: HelpersMap = helpers,
-    debug?: boolean = false
 ): Promise<ApolloServerContext> => {
     const databases: Record<string, Knex<any, unknown[]>> = {};
     for (const db of config.databases) {
         databases[db.name] = await createSatsumaKnex(db);
     }
 
-    const importPath = path.dirname(config.resolverFile);
-    const helpersSafe = deepCloneVMFunction(helpers, createVM(importPath, globalContext));
-    log(debug, 'helpersSafe', JSON.stringify(helpersSafe));
-    log(debug, 'dbs', JSON.stringify(databases));
-
     return {
-        db: databases,
-        helpers: helpersSafe,
+        dbInternal: databases,
     };
 };
 
@@ -172,7 +156,7 @@ const createSatsumaQueryExpressMiddleware = (
 
     satsumaMiddleware.shutdown = async () => {
         await Promise.all(
-            Object.values(apolloServerContext.db).map(
+            Object.values(apolloServerContext.dbInternal).map(
                 async (db) => await db.destroy()
             )
         );

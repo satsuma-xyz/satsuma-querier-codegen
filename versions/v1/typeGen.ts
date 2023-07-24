@@ -43,8 +43,10 @@ export type Database = {
     schema: string;
     tables: Record<string, string>;
     tablesRaw: Record<string, {name: string; description?: string}>;
-    // Todo: This is actually a knex object, but we don't want to import knex here, so we just used any
-} & any;
+    
+    query: (query: string, params?: any[]) => Promise<any[]>;
+    find: (query: string, params?: any[]) => Promise<any>;
+}
 
 export interface HelpersMap {
   [p: string]: Function | HelpersMap;
@@ -53,7 +55,19 @@ export interface HelpersMap {
 export type Context = {
     db: {
         entities: Database;
-    },
+    };
+    utils: {
+        _: any; // Lodash
+        dateFns: any;
+        uuid: {
+            v5: () => string;
+            v4: () => string;
+            v3: () => string;
+            v2: () => string;
+            v1: () => string;
+        };
+        validator: any;
+    };
     helpers: HelpersMap
 }
 `;
