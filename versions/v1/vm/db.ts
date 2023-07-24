@@ -33,7 +33,6 @@ export const addDBsToVM = async (vm: SatsumaVM, dbs: Database[]) => {
             return new Promise(async (resolve, reject) => {
                 try {
                     const queryWithCTEs = CTEs.length === 0 ? query : `WITH ${CTEs.join(',\n')}\n${query}`
-                    console.log({queryWithCTEs});
                     resolve(new ivm.ExternalCopy(await client.query(`SET search_path TO ${schema}; ${queryWithCTEs}`, args)).copyInto());
                 } catch (error) {
                     reject(error);
